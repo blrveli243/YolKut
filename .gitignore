@@ -1,0 +1,44 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Frontend (Flutter) specific
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.packages
+frontend/build/
+frontend/ios/Flutter/ephemeral/
+frontend/ios/Flutter/FlutterEventListener.h
+frontend/ios/Flutter/FlutterEventListener.m
+frontend/ios/Flutter/Generated.xcconfig
+frontend/ios/Flutter/flutter_export_environment.sh
+frontend/android/key.properties
+frontend/*.iml
+frontend/*.ipr
+frontend/*.iws
+frontend/.idea/
+
+# Backend (NestJS) specific
+backend/node_modules/
+backend/dist/
+backend/npm-debug.log
+backend/yarn-debug.log
+backend/yarn-error.log
+backend/.env
+backend/prisma/migrations/
+backend/dist/
+
+# Local IDE / Editors
+.idea/
+.vscode/
+*.suo
+*.ntvsca
+*.njsproj
+*.sln
+*.sw?

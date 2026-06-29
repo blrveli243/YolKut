@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 Int                 @id @default(autoincrement())
+  email              String              @unique
+  password           String
+  createdAt          DateTime            @default(now())
+  age                Int?
+  dailyGoal          String?
+  gender             String?
+  height             Float?
+  weight             Float?
+  activityLevel      Float?              @default(1.2)
+  targetDays         Int?
+  targetWeight       Float?
+  firstName          String?
+  lastName           String?
+  photoUrl           String?
+  customExercises    CustomExercise[]
+  customFoods        CustomFood[]
+  foodLogs           FoodLog[]
+  goals              Goal[]
+  healthData         HealthData[]
+  scheduledExercises ScheduledExercise[]
+  tasks              Task[]
+  wishlists          WishlistItem[]
+}
+
+model HealthData {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  steps          Int
+  activeCalories Float
+  basalCalories  Float
+  sleepMinutes   Int
+  date           DateTime
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
+}
+
+model Task {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  title         String
+  isCompleted   Boolean   @default(false)
+  date          DateTime
+  location      String?
+  scheduledTime DateTime?
+  goalId        Int?
+  goal          Goal?     @relation(fields: [goalId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
+}
+
+model Goal {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  title      String
+  category   String
+  createdAt  DateTime @default(now())
+  targetDays Int
+  user       User     @relation(fields: [userId], references: [id])
+  tasks      Task[]
+}
+
+model FoodLog {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  name     String
+  calories Float
+  protein  Float
+  carbs    Float
+  fat      Float
+  sugar    Float
+  date     DateTime
+  user     User     @relation(fields: [userId], references: [id])
+}
+
+model WishlistItem {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  title       String
+  price       Float?
+  link        String?
+  orderIndex  Int      @default(0)
+  isPurchased Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model CustomFood {
+  id          Int     @id @default(autoincrement())
+  userId      Int
+  name        String
+  ingredients String?
+  calories    Float
+  protein     Float
+  carbs       Float
+  fat         Float
+  sugar       Float
+  user        User    @relation(fields: [userId], references: [id])
+}
+
+model CustomExercise {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  category  String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model ScheduledExercise {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  weekday    Int
+  exerciseId String
+  targetSets Int
+  targetReps Int
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+}
