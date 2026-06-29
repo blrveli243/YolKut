@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/data/exercises_db.dart';
 import 'programs_provider.dart';
 import 'select_exercise_screen.dart';
-import 'workout_analytics_screen.dart';
 
 class ProgramsScreen extends ConsumerStatefulWidget {
   const ProgramsScreen({Key? key}) : super(key: key);
@@ -19,7 +18,8 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheduledExercises = ref.watch(programsProvider)
+    final programsState = ref.watch(programsProvider);
+    final scheduledExercises = (programsState.scheduled.value ?? [])
         .where((e) => e.weekday == _selectedWeekday)
         .toList();
 

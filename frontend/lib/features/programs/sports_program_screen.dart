@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/data/exercises_db.dart';
 import 'programs_provider.dart';
 import 'select_exercise_screen.dart';
-import 'workout_analytics_screen.dart';
 
 class SportsProgramScreen extends ConsumerStatefulWidget {
   const SportsProgramScreen({Key? key}) : super(key: key);

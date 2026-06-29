@@ -4,6 +4,6 @@ import { HealthDataService } from './health-data.service';
 
 @Module({
   controllers: [HealthDataController],
-  providers: [HealthDataService]
+  providers: [HealthDataService],
 })
 export class HealthDataModule {}

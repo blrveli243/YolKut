@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Req, UseGuards, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Req,
+  UseGuards,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ProgramsService } from './programs.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -13,8 +22,15 @@ export class ProgramsController {
   }
 
   @Post('custom-exercises')
-  async createCustomExercise(@Req() req: any, @Body() body: { name: string; category: string }) {
-    return this.programsService.createCustomExercise(req.user.sub, body.name, body.category);
+  async createCustomExercise(
+    @Req() req: any,
+    @Body() body: { name: string; category: string },
+  ) {
+    return this.programsService.createCustomExercise(
+      req.user.sub,
+      body.name,
+      body.category,
+    );
   }
 
   @Get('scheduled')
@@ -29,6 +45,9 @@ export class ProgramsController {
 
   @Delete('scheduled/:id')
   async removeScheduledExercise(@Req() req: any, @Param('id') id: string) {
-    return this.programsService.removeScheduledExercise(req.user.sub, parseInt(id, 10));
+    return this.programsService.removeScheduledExercise(
+      req.user.sub,
+      parseInt(id, 10),
+    );
   }
 }

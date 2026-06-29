@@ -12,19 +12,19 @@ async function bootstrap() {
   app.enableCors();
 
   // Global Validation Pipe
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   // Global Exception Filter
   app.useGlobalFilters(new HttpExceptionFilter());
 
   const prismaService = app.get(PrismaService);
   const hashedPassword = await bcrypt.hash('password', 10);
-
-
 
   // Ensure default user exists for demonstration
   await prismaService.user.upsert({

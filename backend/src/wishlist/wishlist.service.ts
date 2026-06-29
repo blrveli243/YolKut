@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -31,7 +35,8 @@ export class WishlistService {
 
     const updateData: any = {};
     if (dto.title !== undefined) updateData.title = dto.title;
-    if (dto.price !== undefined) updateData.price = dto.price ? parseFloat(dto.price.toString()) : null;
+    if (dto.price !== undefined)
+      updateData.price = dto.price ? parseFloat(dto.price.toString()) : null;
     if (dto.link !== undefined) updateData.link = dto.link;
     if (dto.isPurchased !== undefined) updateData.isPurchased = dto.isPurchased;
     if (dto.orderIndex !== undefined) updateData.orderIndex = dto.orderIndex;

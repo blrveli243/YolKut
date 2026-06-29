@@ -23,7 +23,7 @@ export class UsersService {
         activityLevel: true,
         targetWeight: true,
         targetDays: true,
-      }
+      },
     });
 
     if (!user) throw new NotFoundException('Kullanıcı bulunamadı');
@@ -48,7 +48,7 @@ export class UsersService {
         activityLevel: true,
         targetWeight: true,
         targetDays: true,
-      }
+      },
     });
   }
 }

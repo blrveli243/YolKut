@@ -17,16 +17,16 @@ export class GoalsService {
     });
 
     const tasksToCreate = [];
-    let currentDate = new Date();
-    currentDate.setUTCHours(0,0,0,0);
-    
+    const currentDate = new Date();
+    currentDate.setUTCHours(0, 0, 0, 0);
+
     for (let i = 0; i < dto.targetDays; i++) {
       const date = new Date(currentDate);
       date.setDate(date.getDate() + i);
-      
+
       let dayOfWeek = date.getDay();
       if (dayOfWeek === 0) dayOfWeek = 7; // Sunday=7
-      
+
       if (dto.daysOfWeek.includes(dayOfWeek)) {
         tasksToCreate.push({
           userId,

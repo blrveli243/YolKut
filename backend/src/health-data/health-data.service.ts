@@ -5,7 +5,14 @@ import { PrismaService } from '../prisma/prisma.service';
 export class HealthDataService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: { userId: number; steps: number; activeCalories: number; basalCalories: number; sleepMinutes: number; date: Date }) {
+  async create(data: {
+    userId: number;
+    steps: number;
+    activeCalories: number;
+    basalCalories: number;
+    sleepMinutes: number;
+    date: Date;
+  }) {
     return this.prisma.healthData.upsert({
       where: {
         userId_date: {

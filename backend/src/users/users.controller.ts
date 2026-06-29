@@ -1,4 +1,15 @@
-import { Controller, Get, Patch, Body, UseGuards, Request, Post, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Body,
+  UseGuards,
+  Request,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  BadRequestException,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -23,23 +34,29 @@ export class UsersController {
   }
 
   @Post('me/photo')
-  @UseInterceptors(FileInterceptor('file', {
-    storage: diskStorage({
-      destination: (req, file, cb) => {
-        const path = './uploads/profiles';
-        if (!fs.existsSync(path)) {
-          fs.mkdirSync(path, { recursive: true });
-        }
-        cb(null, path);
-      },
-      filename: (req: any, file, callback) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        const ext = extname(file.originalname);
-        callback(null, `${req.user.sub}-${uniqueSuffix}${ext}`);
-      },
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          const path = './uploads/profiles';
+          if (!fs.existsSync(path)) {
+            fs.mkdirSync(path, { recursive: true });
+          }
+          cb(null, path);
+        },
+        filename: (req: any, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `${req.user.sub}-${uniqueSuffix}${ext}`);
+        },
+      }),
     }),
-  }))
-  async uploadPhoto(@Request() req: any, @UploadedFile() file: Express.Multer.File) {
+  )
+  async uploadPhoto(
+    @Request() req: any,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     if (!file) {
       throw new BadRequestException('Dosya bulunamadı.');
     }

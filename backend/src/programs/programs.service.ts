@@ -13,7 +13,7 @@ export class ProgramsService {
     });
   }
 
-  async createCustomExercise(userId: number, name: String, category: String) {
+  async createCustomExercise(userId: number, name: string, category: string) {
     return this.prisma.customExercise.create({
       data: {
         userId,
@@ -27,10 +27,7 @@ export class ProgramsService {
   async getScheduledExercises(userId: number) {
     return this.prisma.scheduledExercise.findMany({
       where: { userId },
-      orderBy: [
-        { weekday: 'asc' },
-        { createdAt: 'asc' },
-      ],
+      orderBy: [{ weekday: 'asc' }, { createdAt: 'asc' }],
     });
   }
 

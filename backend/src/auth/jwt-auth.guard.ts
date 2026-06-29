@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
@@ -9,14 +14,14 @@ export class JwtAuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
-    
+
     if (!token) {
       throw new UnauthorizedException('Yetkilendirme belirteci bulunamadı.');
     }
-    
+
     try {
       const payload = await this.jwtService.verifyAsync(token, {
-        secret: 'super-secret-key-for-now'
+        secret: 'super-secret-key-for-now',
       });
       (request as any)['user'] = payload;
     } catch {

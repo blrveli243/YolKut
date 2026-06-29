@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthDto } from './dto/auth.dto';
@@ -8,12 +12,12 @@ import * as bcrypt from 'bcrypt';
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   async register(dto: AuthDto) {
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: dto.email }
+      where: { email: dto.email },
     });
 
     if (existingUser) {
@@ -25,7 +29,7 @@ export class AuthService {
       data: {
         email: dto.email,
         password: hashedPassword,
-      }
+      },
     });
 
     return this.signToken(user.id, user.email);
@@ -33,7 +37,7 @@ export class AuthService {
 
   async login(dto: AuthDto) {
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email }
+      where: { email: dto.email },
     });
 
     if (!user) {
