@@ -3,6 +3,7 @@ services:
     name: yolkut-backend
     env: node
     rootDir: backend
+    plan: free
     buildCommand: npm install && npx prisma generate && npm run build
     startCommand: npm run start:prod
     envVars:
