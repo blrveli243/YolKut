@@ -11,13 +11,21 @@ class TaskRepository {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> createTask(String title, String date, {String? scheduledTime, String? location}) async {
-    final response = await apiClient.dio.post('/tasks', data: {
-      'title': title,
-      'date': date,
-      if (scheduledTime != null) 'scheduledTime': scheduledTime,
-      if (location != null) 'location': location,
-    });
+  Future<Map<String, dynamic>> createTask(
+    String title,
+    String date, {
+    String? scheduledTime,
+    String? location,
+  }) async {
+    final response = await apiClient.dio.post(
+      '/tasks',
+      data: {
+        'title': title,
+        'date': date,
+        'scheduledTime': ?scheduledTime,
+        'location': ?location,
+      },
+    );
     return response.data;
   }
 

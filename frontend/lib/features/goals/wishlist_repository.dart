@@ -6,12 +6,19 @@ class WishlistRepository {
     return response.data as List<dynamic>;
   }
 
-  Future<Map<String, dynamic>> createItem(String title, {String? link, double? price}) async {
-    final response = await apiClient.dio.post('/wishlists', data: {
-      'title': title,
-      if (link != null && link.isNotEmpty) 'link': link,
-      if (price != null) 'price': price,
-    });
+  Future<Map<String, dynamic>> createItem(
+    String title, {
+    String? link,
+    double? price,
+  }) async {
+    final response = await apiClient.dio.post(
+      '/wishlists',
+      data: {
+        'title': title,
+        if (link != null && link.isNotEmpty) 'link': link,
+        'price': ?price,
+      },
+    );
     return response.data;
   }
 

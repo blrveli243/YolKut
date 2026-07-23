@@ -1,3 +1,4 @@
+import '../../core/theme/app_colors.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -5,13 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 class StudyProgramScreen extends StatefulWidget {
-  const StudyProgramScreen({Key? key}) : super(key: key);
+  const StudyProgramScreen({super.key});
 
   @override
   State<StudyProgramScreen> createState() => _StudyProgramScreenState();
 }
 
-class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTickerProviderStateMixin {
+class _StudyProgramScreenState extends State<StudyProgramScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   // Study Goals Status
@@ -152,19 +154,24 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
         _secondsRemaining = 25 * 60; // 25 min work
       }
     });
-    
+
     // Play sound / Show dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(_isBreak ? 'Tebrikler!' : 'Mola Bitti!'),
-        content: Text(_isBreak 
-            ? 'Bir Pomodoro seansını tamamladınız. Şimdi 5 dakikalık mola zamanı!' 
-            : 'Molanız bitti. Yeni odaklanma seansına başlamaya hazır mısınız?'),
+        content: Text(
+          _isBreak
+              ? 'Bir Pomodoro seansını tamamladınız. Şimdi 5 dakikalık mola zamanı!'
+              : 'Molanız bitti. Yeni odaklanma seansına başlamaya hazır mısınız?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Tamam', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Tamam',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -182,12 +189,17 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF9FAFB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Ders / Çalışma Asistanı', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Ders / Çalışma Asistanı',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
       body: Column(
         children: [
@@ -198,17 +210,17 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                  colors: [AppColors.info, Color(0xFF2563EB)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF3B82F6).withOpacity(0.3),
+                    color: AppColors.info.withOpacity(0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
-                  )
+                  ),
                 ],
               ),
               child: Row(
@@ -237,11 +249,16 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
           // Tab Bar
           TabBar(
             controller: _tabController,
-            labelColor: const Color(0xFF3B82F6),
-            unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-            indicatorColor: const Color(0xFF3B82F6),
+            labelColor: AppColors.info,
+            unselectedLabelColor: Theme.of(
+              context,
+            ).colorScheme.onSurface.withOpacity(0.5),
+            indicatorColor: AppColors.info,
             indicatorWeight: 3,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
             tabs: const [
               Tab(text: 'Hedefler'),
               Tab(text: 'Pomodoro'),
@@ -265,14 +282,22 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
     );
   }
 
-  Widget _buildHeaderStat({required IconData icon, required String label, required String value}) {
+  Widget _buildHeaderStat({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
     return Column(
       children: [
         Icon(icon, color: Colors.white, size: 28),
         const SizedBox(height: 6),
         Text(
           value,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
         ),
         const SizedBox(height: 2),
         Text(
@@ -304,16 +329,23 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const Text('Günlük Ders Çalışma Hedefleri', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text(
+          'Günlük Ders Çalışma Hedefleri',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 6),
         Text(
           'Günü verimli geçirmek için çalışma programınızı kontrol edin.',
-          style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          ),
         ),
         const SizedBox(height: 20),
         _buildGoalTile(
           title: '3 Saat Ders Çalış',
-          subtitle: 'Günde en az 3 saat (180 dakika) aktif çalışmayı hedefleyin.',
+          subtitle:
+              'Günde en az 3 saat (180 dakika) aktif çalışmayı hedefleyin.',
           icon: Icons.schedule,
           color: Colors.blue,
           value: _goalHours,
@@ -377,7 +409,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
       child: CheckboxListTile(
         value: value,
         onChanged: onChanged,
-        activeColor: const Color(0xFF3B82F6),
+        activeColor: AppColors.info,
         title: Text(
           title,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -415,14 +447,15 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
                 shape: BoxShape.circle,
                 color: Theme.of(context).cardColor,
                 border: Border.all(
-                  color: _isBreak ? const Color(0xFF10B981) : const Color(0xFF3B82F6),
+                  color: _isBreak ? AppColors.primary : AppColors.info,
                   width: 8,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: (_isBreak ? const Color(0xFF10B981) : const Color(0xFF3B82F6)).withOpacity(0.15),
+                    color: (_isBreak ? AppColors.primary : AppColors.info)
+                        .withOpacity(0.15),
                     blurRadius: 20,
-                  )
+                  ),
                 ],
               ),
               child: Column(
@@ -431,9 +464,9 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
                   Text(
                     _isBreak ? 'Mola' : 'Odaklanma',
                     style: TextStyle(
-                      fontSize: 16, 
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: _isBreak ? const Color(0xFF10B981) : const Color(0xFF3B82F6),
+                      color: _isBreak ? AppColors.primary : AppColors.info,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -455,12 +488,28 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
               children: [
                 ElevatedButton.icon(
                   onPressed: _toggleTimer,
-                  icon: Icon(_isRunning ? Icons.pause : Icons.play_arrow, color: Colors.white),
-                  label: Text(_isRunning ? 'Duraklat' : 'Başlat', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  icon: Icon(
+                    _isRunning ? Icons.pause : Icons.play_arrow,
+                    color: Colors.white,
+                  ),
+                  label: Text(
+                    _isRunning ? 'Duraklat' : 'Başlat',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: _isBreak ? const Color(0xFF10B981) : const Color(0xFF3B82F6),
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    backgroundColor: _isBreak
+                        ? AppColors.primary
+                        : AppColors.info,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -485,11 +534,17 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Çalıştığım Konular', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text(
+            'Çalıştığım Konular',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 6),
           Text(
             'Her çalışma seansını kaydederek gelişiminizi görün.',
-            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
           ),
           const SizedBox(height: 20),
 
@@ -542,13 +597,18 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    if (_subjectController.text.isNotEmpty && _durationController.text.isNotEmpty) {
+                    if (_subjectController.text.isNotEmpty &&
+                        _durationController.text.isNotEmpty) {
                       setState(() {
                         _studyLogs.insert(0, {
-                          'date': DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now()),
+                          'date': DateFormat(
+                            'dd.MM.yyyy HH:mm',
+                          ).format(DateTime.now()),
                           'subject': _subjectController.text.trim(),
-                          'duration': int.tryParse(_durationController.text) ?? 30,
-                          'questions': int.tryParse(_questionsController.text) ?? 0,
+                          'duration':
+                              int.tryParse(_durationController.text) ?? 30,
+                          'questions':
+                              int.tryParse(_questionsController.text) ?? 0,
                         });
                         _subjectController.clear();
                         _durationController.clear();
@@ -558,18 +618,30 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6),
+                    backgroundColor: AppColors.info,
                     minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Çalışmayı Kaydet', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: const Text(
+                    'Çalışmayı Kaydet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
 
           const SizedBox(height: 24),
-          const Text('Geçmiş Çalışmalarım', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            'Geçmiş Çalışmalarım',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
 
           _studyLogs.isEmpty
@@ -578,7 +650,11 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
                   child: Center(
                     child: Text(
                       'Henüz çalışma seansı kaydedilmedi.',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4)),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.4),
+                      ),
                     ),
                   ),
                 )
@@ -594,17 +670,22 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                        ),
                       ),
                       child: Row(
                         children: [
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF3B82F6).withOpacity(0.1),
+                              color: AppColors.info.withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.bookmark, color: Color(0xFF3B82F6)),
+                            child: const Icon(
+                              Icons.bookmark,
+                              color: AppColors.info,
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -613,12 +694,20 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
                               children: [
                                 Text(
                                   log['subject'] ?? '',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   '${log['duration']} Dakika | ${log['questions']} Soru',
-                                  style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface.withOpacity(0.5),
+                                  ),
                                 ),
                               ],
                             ),
@@ -628,7 +717,12 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
                             children: [
                               Text(
                                 log['date']?.toString().split(' ')[0] ?? '',
-                                style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4)),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.4),
+                                ),
                               ),
                               const SizedBox(height: 6),
                               GestureDetector(
@@ -638,8 +732,12 @@ class _StudyProgramScreenState extends State<StudyProgramScreen> with SingleTick
                                   });
                                   _saveLogs();
                                 },
-                                child: const Icon(Icons.delete_outline, size: 18, color: Colors.red),
-                              )
+                                child: const Icon(
+                                  Icons.delete_outline,
+                                  size: 18,
+                                  color: Colors.red,
+                                ),
+                              ),
                             ],
                           ),
                         ],

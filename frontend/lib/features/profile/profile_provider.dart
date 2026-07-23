@@ -12,33 +12,44 @@ class ProfileNotifier extends AsyncNotifier<Map<String, dynamic>> {
   }
 
   Future<void> updateProfile(Map<String, dynamic> data) async {
-    state = const AsyncValue<Map<String, dynamic>>.loading().copyWithPrevious(state);
+    state = const AsyncValue<Map<String, dynamic>>.loading().copyWithPrevious(
+      state,
+    );
     try {
       final repo = ref.read(profileRepositoryProvider);
       await repo.updateProfile(data);
       final newProfile = await repo.fetchProfile();
       state = AsyncValue.data(newProfile);
-      
+
       // Profil güncellendiğinde beslenme verilerini de yenile
       ref.invalidate(nutritionProvider);
     } catch (e, stack) {
-      state = AsyncValue<Map<String, dynamic>>.error(e, stack).copyWithPrevious(state);
+      state = AsyncValue<Map<String, dynamic>>.error(
+        e,
+        stack,
+      ).copyWithPrevious(state);
     }
   }
 
   Future<void> uploadPhoto(String filePath) async {
-    state = const AsyncValue<Map<String, dynamic>>.loading().copyWithPrevious(state);
+    state = const AsyncValue<Map<String, dynamic>>.loading().copyWithPrevious(
+      state,
+    );
     try {
       final repo = ref.read(profileRepositoryProvider);
       await repo.uploadProfilePhoto(filePath);
       final newProfile = await repo.fetchProfile();
       state = AsyncValue.data(newProfile);
     } catch (e, stack) {
-      state = AsyncValue<Map<String, dynamic>>.error(e, stack).copyWithPrevious(state);
+      state = AsyncValue<Map<String, dynamic>>.error(
+        e,
+        stack,
+      ).copyWithPrevious(state);
     }
   }
 }
 
-final profileProvider = AsyncNotifierProvider<ProfileNotifier, Map<String, dynamic>>(() {
-  return ProfileNotifier();
-});
+final profileProvider =
+    AsyncNotifierProvider<ProfileNotifier, Map<String, dynamic>>(() {
+      return ProfileNotifier();
+    });

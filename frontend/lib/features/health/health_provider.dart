@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'health_repository.dart';
 import '../../core/api_client.dart';
@@ -48,7 +49,7 @@ class HealthSyncNotifier extends Notifier<HealthState> {
     state = state.copyWith(isLoading: true, hasError: false);
     try {
       final repository = ref.read(healthRepositoryProvider);
-      
+
       final hasPermissions = await repository.requestPermissions();
       if (!hasPermissions) {
         state = state.copyWith(isLoading: false, hasError: true);
@@ -56,29 +57,33 @@ class HealthSyncNotifier extends Notifier<HealthState> {
       }
 
       final data = await repository.fetchHealthData();
-      
+
       try {
         await apiClient.postHealthData(data);
       } catch (e) {
-        print('Backend sync error (ignored for UI): $e');
+        debugPrint('Backend sync error (ignored for UI): $e');
       }
-      
+
       state = state.copyWith(
         isLoading: false,
         hasError: false,
         steps: data['steps'] ?? 0,
         activeCalories: data['activeCalories'] ?? 0.0,
-        historicalSteps: List<Map<String, dynamic>>.from(data['historicalSteps'] ?? []),
+        historicalSteps: List<Map<String, dynamic>>.from(
+          data['historicalSteps'] ?? [],
+        ),
         allWorkouts: List<Map<String, dynamic>>.from(data['workouts'] ?? []),
       );
     } catch (e) {
-      print('Health Sync Error: $e');
+      debugPrint('Health Sync Error: $e');
       state = state.copyWith(isLoading: false, hasError: true);
     }
   }
 }
 
 final healthRepositoryProvider = Provider((ref) => HealthRepository());
-final healthSyncProvider = NotifierProvider<HealthSyncNotifier, HealthState>(() {
-  return HealthSyncNotifier();
-});
+final healthSyncProvider = NotifierProvider<HealthSyncNotifier, HealthState>(
+  () {
+    return HealthSyncNotifier();
+  },
+);

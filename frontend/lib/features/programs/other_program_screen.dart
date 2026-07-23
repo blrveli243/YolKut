@@ -1,16 +1,18 @@
+import '../../core/theme/app_colors.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 class OtherProgramScreen extends StatefulWidget {
-  const OtherProgramScreen({Key? key}) : super(key: key);
+  const OtherProgramScreen({super.key});
 
   @override
   State<OtherProgramScreen> createState() => _OtherProgramScreenState();
 }
 
-class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTickerProviderStateMixin {
+class _OtherProgramScreenState extends State<OtherProgramScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   // Custom Program Settings
@@ -20,7 +22,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
 
   // Daily Tasks Checklist
   List<Map<String, dynamic>> _customTasks = [];
-  
+
   // Progress Logs
   List<Map<String, dynamic>> _otherLogs = [];
 
@@ -46,9 +48,9 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
 
   final List<Color> _availableColors = [
     const Color(0xFFEC4899), // Pink
-    const Color(0xFF3B82F6), // Blue
-    const Color(0xFF10B981), // Green
-    const Color(0xFFF59E0B), // Orange
+    AppColors.info, // Blue
+    AppColors.primary, // Green
+    AppColors.warning, // Orange
     const Color(0xFF8B5CF6), // Purple
     const Color(0xFFEF4444), // Red
   ];
@@ -138,8 +140,13 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              title: const Text('Programı Özelleştir', style: TextStyle(fontWeight: FontWeight.bold)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Text(
+                'Programı Özelleştir',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -147,10 +154,16 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                   children: [
                     TextField(
                       controller: _titleEditingController,
-                      decoration: const InputDecoration(labelText: 'Program Başlığı', border: OutlineInputBorder()),
+                      decoration: const InputDecoration(
+                        labelText: 'Program Başlığı',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                     const SizedBox(height: 16),
-                    const Text('Simge Seçin', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Simge Seçin',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -166,17 +179,29 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: isSelected ? _programColor.withOpacity(0.2) : Colors.transparent,
-                              border: Border.all(color: isSelected ? _programColor : Colors.grey.shade300),
+                              color: isSelected
+                                  ? _programColor.withOpacity(0.2)
+                                  : Colors.transparent,
+                              border: Border.all(
+                                color: isSelected
+                                    ? _programColor
+                                    : Colors.grey.shade300,
+                              ),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(icon, color: isSelected ? _programColor : Colors.grey),
+                            child: Icon(
+                              icon,
+                              color: isSelected ? _programColor : Colors.grey,
+                            ),
                           ),
                         );
                       }).toList(),
                     ),
                     const SizedBox(height: 16),
-                    const Text('Tema Rengi Seçin', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Tema Rengi Seçin',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
@@ -195,10 +220,17 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                             decoration: BoxDecoration(
                               color: color,
                               shape: BoxShape.circle,
-                              border: isSelected ? Border.all(color: Colors.white, width: 3) : null,
-                              boxShadow: isSelected 
-                                ? [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 4)] 
-                                : null,
+                              border: isSelected
+                                  ? Border.all(color: Colors.white, width: 3)
+                                  : null,
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        blurRadius: 4,
+                                      ),
+                                    ]
+                                  : null,
                             ),
                           ),
                         );
@@ -210,7 +242,10 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('İptal', style: TextStyle(color: Colors.grey)),
+                  child: const Text(
+                    'İptal',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -220,8 +255,16 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                     _saveSettings();
                     Navigator.pop(context);
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: _programColor),
-                  child: const Text('Kaydet', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _programColor,
+                  ),
+                  child: const Text(
+                    'Kaydet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             );
@@ -256,18 +299,23 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF9FAFB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(_programTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          _programTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
             color: _programColor,
             onPressed: _showConfigureDialog,
-          )
+          ),
         ],
       ),
       body: Column(
@@ -289,7 +337,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                     color: _programColor.withOpacity(0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
-                  )
+                  ),
                 ],
               ),
               child: Row(
@@ -309,12 +357,19 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                       children: [
                         Text(
                           _programTitle,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           'Kişisel hedeflerinize ve ilgi alanlarınıza özel esnek takip programı.',
-                          style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -328,10 +383,15 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
           TabBar(
             controller: _tabController,
             labelColor: _programColor,
-            unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            unselectedLabelColor: Theme.of(
+              context,
+            ).colorScheme.onSurface.withOpacity(0.5),
             indicatorColor: _programColor,
             indicatorWeight: 3,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
             tabs: const [
               Tab(text: 'Yapılacaklar'),
               Tab(text: 'İlerleme Günlüğü'),
@@ -342,10 +402,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildTasksTab(),
-                _buildLogsTab(),
-              ],
+              children: [_buildTasksTab(), _buildLogsTab()],
             ),
           ),
         ],
@@ -367,8 +424,13 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                   controller: _taskNameController,
                   decoration: const InputDecoration(
                     hintText: 'Yeni görev / hedef ekleyin...',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ),
@@ -377,11 +439,16 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                 onPressed: () => _addTask(_taskNameController.text),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _programColor,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: const Icon(Icons.add, color: Colors.white),
-              )
+              ),
             ],
           ),
         ),
@@ -392,7 +459,11 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
               ? Center(
                   child: Text(
                     'Henüz görev eklenmedi.',
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4)),
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.4),
+                    ),
                   ),
                 )
               : ListView.builder(
@@ -405,7 +476,9 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                        ),
                       ),
                       child: CheckboxListTile(
                         value: task['completed'] ?? false,
@@ -420,17 +493,23 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                           task['name'] ?? '',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
-                            decoration: (task['completed'] ?? false) 
-                                ? TextDecoration.lineThrough 
+                            decoration: (task['completed'] ?? false)
+                                ? TextDecoration.lineThrough
                                 : TextDecoration.none,
                             color: (task['completed'] ?? false)
-                                ? Theme.of(context).colorScheme.onSurface.withOpacity(0.5)
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.5)
                                 : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         secondary: GestureDetector(
                           onTap: () => _deleteTask(index),
-                          child: const Icon(Icons.close, color: Colors.redAccent, size: 20),
+                          child: const Icon(
+                            Icons.close,
+                            color: Colors.redAccent,
+                            size: 20,
+                          ),
                         ),
                         controlAffinity: ListTileControlAffinity.leading,
                       ),
@@ -449,11 +528,17 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('İlerleme Notları', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text(
+            'İlerleme Notları',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 6),
           Text(
             'Çalışmalarınızı, başarılarınızı ve diğer notlarınızı süreyle kaydedin.',
-            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
           ),
           const SizedBox(height: 20),
 
@@ -498,12 +583,16 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    if (_logActivityController.text.isNotEmpty && _logDurationController.text.isNotEmpty) {
+                    if (_logActivityController.text.isNotEmpty &&
+                        _logDurationController.text.isNotEmpty) {
                       setState(() {
                         _otherLogs.insert(0, {
-                          'date': DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now()),
+                          'date': DateFormat(
+                            'dd.MM.yyyy HH:mm',
+                          ).format(DateTime.now()),
                           'activity': _logActivityController.text.trim(),
-                          'duration': int.tryParse(_logDurationController.text) ?? 30,
+                          'duration':
+                              int.tryParse(_logDurationController.text) ?? 30,
                           'note': _logNotesController.text.trim(),
                         });
                         _logActivityController.clear();
@@ -516,16 +605,28 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _programColor,
                     minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Günlüğe Kaydet', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  child: const Text(
+                    'Günlüğe Kaydet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
 
           const SizedBox(height: 24),
-          const Text('Geçmiş Günlüklerim', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            'Geçmiş Günlüklerim',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
 
           _otherLogs.isEmpty
@@ -534,7 +635,11 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                   child: Center(
                     child: Text(
                       'Henüz günlük kaydedilmedi.',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4)),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.4),
+                      ),
                     ),
                   ),
                 )
@@ -550,7 +655,9 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -558,7 +665,15 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(log['date'] ?? '', style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
+                              Text(
+                                log['date'] ?? '',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                ),
+                              ),
                               GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -566,26 +681,52 @@ class _OtherProgramScreenState extends State<OtherProgramScreen> with SingleTick
                                   });
                                   _saveLogs();
                                 },
-                                child: const Icon(Icons.close, size: 18, color: Colors.red),
-                              )
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                  color: Colors.red,
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8),
-                          Text(log['activity'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          Text(
+                            log['activity'] ?? '',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
                           const SizedBox(height: 4),
-                          Text('Süre: ${log['duration']} Dakika', style: TextStyle(color: _programColor, fontWeight: FontWeight.w600, fontSize: 13)),
-                          if (log['note'] != null && log['note'].toString().isNotEmpty) ...[
+                          Text(
+                            'Süre: ${log['duration']} Dakika',
+                            style: TextStyle(
+                              color: _programColor,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                          if (log['note'] != null &&
+                              log['note'].toString().isNotEmpty) ...[
                             const SizedBox(height: 8),
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).scaffoldBackgroundColor,
+                                color: Theme.of(
+                                  context,
+                                ).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Text(log['note'], style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic)),
-                            )
-                          ]
+                              child: Text(
+                                log['note'],
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     );

@@ -941,7 +941,7 @@ export class NutritionService {
       const customFoods = await this.prisma.customFood.findMany({
         where: { userId },
       });
-      return customFoods.map((f) => ({ ...f, isCustom: true }));
+      return customFoods.map((f: any) => ({ ...f, isCustom: true }));
     }
     const normalizedQuery = this.normalizeString(query);
 
@@ -950,7 +950,7 @@ export class NutritionService {
       where: { userId },
     });
 
-    const filteredCustom = customFoods.filter((f) =>
+    const filteredCustom = customFoods.filter((f: any) =>
       this.normalizeString(f.name).includes(normalizedQuery),
     );
 
@@ -959,7 +959,7 @@ export class NutritionService {
     );
 
     // Combine them, marking custom foods so the UI can show a badge
-    const formattedCustom = filteredCustom.map((f) => ({
+    const formattedCustom = filteredCustom.map((f: any) => ({
       ...f,
       isCustom: true,
     }));

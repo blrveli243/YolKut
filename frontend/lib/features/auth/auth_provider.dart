@@ -34,7 +34,8 @@ class AuthNotifier extends Notifier<AuthState> {
       await repo.register(email, password);
       state = AuthState.success;
     } catch (e) {
-      errorMessage = 'Kayıt başarısız. E-posta adresi sistemde kayıtlı olabilir.';
+      errorMessage =
+          'Kayıt başarısız. E-posta adresi sistemde kayıtlı olabilir.';
       state = AuthState.error;
     }
   }

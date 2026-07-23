@@ -1,3 +1,4 @@
+import '../../core/theme/app_colors.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,10 +7,11 @@ import 'package:intl/intl.dart';
 import 'workout_logs_provider.dart';
 
 class YolKutAnalyticsScreen extends ConsumerStatefulWidget {
-  const YolKutAnalyticsScreen({Key? key}) : super(key: key);
+  const YolKutAnalyticsScreen({super.key});
 
   @override
-  ConsumerState<YolKutAnalyticsScreen> createState() => _YolKutAnalyticsScreenState();
+  ConsumerState<YolKutAnalyticsScreen> createState() =>
+      _YolKutAnalyticsScreenState();
 }
 
 class _ProgramDataStore {
@@ -21,7 +23,8 @@ class _ProgramDataStore {
   List<Map<String, dynamic>> otherLogs = [];
 }
 
-class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> with SingleTickerProviderStateMixin {
+class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _ProgramDataStore _dataStore = _ProgramDataStore();
   bool _isLoading = true;
@@ -42,7 +45,9 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
   Future<void> _initializeDataStore() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _dataStore.langLogs = _parseJsonList(prefs.getString('lang_journal_logs'));
+      _dataStore.langLogs = _parseJsonList(
+        prefs.getString('lang_journal_logs'),
+      );
       _dataStore.langVocab = _parseJsonList(prefs.getString('lang_vocab_list'));
       _dataStore.studyLogs = _parseJsonList(prefs.getString('study_logs'));
       _dataStore.habits = _parseJsonList(prefs.getString('personal_habits'));
@@ -77,15 +82,26 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
 
   bool _isThisWeek(DateTime date) {
     final now = DateTime.now();
-    final startOfThisWeek = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
-    return date.isAfter(startOfThisWeek) || date.isAtSameMomentAs(startOfThisWeek);
+    final startOfThisWeek = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).subtract(Duration(days: now.weekday - 1));
+    return date.isAfter(startOfThisWeek) ||
+        date.isAtSameMomentAs(startOfThisWeek);
   }
 
   bool _isLastWeek(DateTime date) {
     final now = DateTime.now();
-    final startOfThisWeek = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
+    final startOfThisWeek = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).subtract(Duration(days: now.weekday - 1));
     final startOfLastWeek = startOfThisWeek.subtract(const Duration(days: 7));
-    return (date.isAfter(startOfLastWeek) || date.isAtSameMomentAs(startOfLastWeek)) && date.isBefore(startOfThisWeek);
+    return (date.isAfter(startOfLastWeek) ||
+            date.isAtSameMomentAs(startOfLastWeek)) &&
+        date.isBefore(startOfThisWeek);
   }
 
   Map<String, double> _computeWorkoutStats() {
@@ -98,7 +114,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
     for (var log in logs) {
       final date = _parseDate(log.date);
       if (date == null) continue;
-      
+
       double volume = 0;
       for (var exLog in log.exercises) {
         for (var set in exLog.sets) {
@@ -126,7 +142,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
   Map<String, double> _computeLanguageStats() {
     double thisWeekMinutes = 0;
     double lastWeekMinutes = 0;
-    
+
     for (var log in _dataStore.langLogs) {
       final date = _parseDate(log['date']);
       if (date == null) continue;
@@ -192,10 +208,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
       }
     }
 
-    return {
-      'thisWeekChecks': thisWeekChecks,
-      'lastWeekChecks': lastWeekChecks,
-    };
+    return {'thisWeekChecks': thisWeekChecks, 'lastWeekChecks': lastWeekChecks};
   }
 
   Map<String, double> _computeOtherStats() {
@@ -224,30 +237,40 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: Color(0xFF0A84FF))),
+        body: Center(child: CircularProgressIndicator(color: AppColors.info)),
       );
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF9FAFB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Gelisim ve Istatistikler', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Gelisim ve Istatistikler',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
       body: Column(
         children: [
           TabBar(
             controller: _tabController,
             isScrollable: true,
-            labelColor: const Color(0xFF0A84FF),
-            unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-            indicatorColor: const Color(0xFF0A84FF),
+            labelColor: AppColors.info,
+            unselectedLabelColor: Theme.of(
+              context,
+            ).colorScheme.onSurface.withOpacity(0.5),
+            indicatorColor: AppColors.info,
             indicatorWeight: 3,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
             tabs: const [
               Tab(text: 'Spor'),
               Tab(text: 'Dil Ogrenimi'),
@@ -303,7 +326,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
             color: Colors.black.withOpacity(0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -324,31 +347,54 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Bu Hafta', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                  const SizedBox(height: 4),
-                  Text(thisWeekVal, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                ],
-              ),
-              Container(height: 40, width: 1, color: Theme.of(context).dividerColor),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Gecen Hafta', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text(
+                    'Bu Hafta',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                   const SizedBox(height: 4),
                   Text(
-                    lastWeekVal,
-                    style: TextStyle(
-                      fontSize: 20, 
+                    thisWeekVal,
+                    style: const TextStyle(
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                     ),
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                height: 40,
+                width: 1,
+                color: Theme.of(context).dividerColor,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Gecen Hafta',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    lastWeekVal,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: (isIncrease ? Colors.green : Colors.red).withOpacity(0.12),
+                  color: (isIncrease ? Colors.green : Colors.red).withOpacity(
+                    0.12,
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -374,10 +420,13 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           ),
           const SizedBox(height: 12),
           Text(
-            isIncrease 
-                ? 'Gecen haftaya gore gelisim gosterdiniz, tebrikler!' 
+            isIncrease
+                ? 'Gecen haftaya gore gelisim gosterdiniz, tebrikler!'
                 : 'Ilerlemeyi korumak icin hedeflerinizi gozden gecirin.',
-            style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
+            style: TextStyle(
+              fontSize: 11,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            ),
           ),
         ],
       ),
@@ -406,7 +455,10 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
       ),
       child: Column(
         children: [
-          const Text('Haftalik Karsilastirma Grafigi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          const Text(
+            'Haftalik Karsilastirma Grafigi',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+          ),
           const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -414,7 +466,13 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
             children: [
               Column(
                 children: [
-                  Text('${value2.toStringAsFixed(0)} $unit', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  Text(
+                    '${value2.toStringAsFixed(0)} $unit',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 500),
@@ -422,16 +480,30 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
                     height: height2 < 10 ? 10 : height2,
                     decoration: BoxDecoration(
                       color: color.withOpacity(0.4),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(12),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(label2, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                  Text(
+                    label2,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
               Column(
                 children: [
-                  Text('${value1.toStringAsFixed(0)} $unit', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  Text(
+                    '${value1.toStringAsFixed(0)} $unit',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 500),
@@ -439,11 +511,19 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
                     height: height1 < 10 ? 10 : height1,
                     decoration: BoxDecoration(
                       color: color,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(12),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(label1, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  Text(
+                    label1,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -463,7 +543,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           lastWeekVal: '${stats['lastWeekVolume']!.toStringAsFixed(0)} kg',
           thisWeekRaw: stats['thisWeekVolume']!,
           lastWeekRaw: stats['lastWeekVolume']!,
-          color: const Color(0xFF0A84FF),
+          color: AppColors.info,
           changeLabel: 'hacim artisi',
         ),
         _buildComparisonChart(
@@ -471,7 +551,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           value1: stats['thisWeekVolume']!,
           label2: 'Gecen Hafta',
           value2: stats['lastWeekVolume']!,
-          color: const Color(0xFF0A84FF),
+          color: AppColors.info,
           unit: 'kg',
         ),
         _buildOverviewCard(
@@ -480,7 +560,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           lastWeekVal: '${stats['lastWeekCount']!.toInt()} Seans',
           thisWeekRaw: stats['thisWeekCount']!,
           lastWeekRaw: stats['lastWeekCount']!,
-          color: const Color(0xFF0A84FF),
+          color: AppColors.info,
           changeLabel: 'seans',
         ),
       ],
@@ -497,7 +577,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           lastWeekVal: '${stats['lastWeekMinutes']!.toInt()} dk',
           thisWeekRaw: stats['thisWeekMinutes']!,
           lastWeekRaw: stats['lastWeekMinutes']!,
-          color: const Color(0xFF10B981),
+          color: AppColors.primary,
           changeLabel: 'sure',
         ),
         _buildComparisonChart(
@@ -505,7 +585,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           value1: stats['thisWeekMinutes']!,
           label2: 'Gecen Hafta',
           value2: stats['lastWeekMinutes']!,
-          color: const Color(0xFF10B981),
+          color: AppColors.primary,
           unit: 'dk',
         ),
         Container(
@@ -518,16 +598,25 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           ),
           child: Row(
             children: [
-              const Icon(Icons.style, color: Color(0xFF10B981), size: 36),
+              const Icon(Icons.style, color: AppColors.primary, size: 36),
               const SizedBox(width: 16),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Kelime Haznem', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text(
+                    'Kelime Haznem',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                   const SizedBox(height: 4),
-                  Text('${stats['totalVocab']!.toInt()} Kelime Aktif', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(
+                    '${stats['totalVocab']!.toInt()} Kelime Aktif',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -545,7 +634,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           lastWeekVal: '${stats['lastWeekMinutes']!.toInt()} dk',
           thisWeekRaw: stats['thisWeekMinutes']!,
           lastWeekRaw: stats['lastWeekMinutes']!,
-          color: const Color(0xFF3B82F6),
+          color: AppColors.info,
           changeLabel: 'sure',
         ),
         _buildComparisonChart(
@@ -553,7 +642,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           value1: stats['thisWeekMinutes']!,
           label2: 'Gecen Hafta',
           value2: stats['lastWeekMinutes']!,
-          color: const Color(0xFF3B82F6),
+          color: AppColors.info,
           unit: 'dk',
         ),
         _buildOverviewCard(
@@ -562,7 +651,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
           lastWeekVal: '${stats['lastWeekQuestions']!.toInt()} Soru',
           thisWeekRaw: stats['thisWeekQuestions']!,
           lastWeekRaw: stats['lastWeekQuestions']!,
-          color: const Color(0xFF3B82F6),
+          color: AppColors.info,
           changeLabel: 'soru',
         ),
       ],
@@ -605,11 +694,20 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen> w
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Okuma Listesi', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  const Text(
+                    'Okuma Listesi',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
                   const SizedBox(height: 4),
-                  Text('${_dataStore.books.length} Aktif Kitap Okunuyor', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(
+                    '${_dataStore.books.length} Aktif Kitap Okunuyor',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),

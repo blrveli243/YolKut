@@ -4,18 +4,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 class PersonalDevProgramScreen extends StatefulWidget {
-  const PersonalDevProgramScreen({Key? key}) : super(key: key);
+  const PersonalDevProgramScreen({super.key});
 
   @override
-  State<PersonalDevProgramScreen> createState() => _PersonalDevProgramScreenState();
+  State<PersonalDevProgramScreen> createState() =>
+      _PersonalDevProgramScreenState();
 }
 
-class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> with SingleTickerProviderStateMixin {
+class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   // Habits State
   List<Map<String, dynamic>> _habitsList = [];
-  
+
   // Reading Tracker State
   List<Map<String, dynamic>> _booksList = [];
 
@@ -28,7 +30,15 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
 
   // Weekly tracker dates (Monday to Sunday of the current week)
   late List<DateTime> _weekDays;
-  final List<String> _weekDayLabels = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+  final List<String> _weekDayLabels = [
+    'Pzt',
+    'Sal',
+    'Çar',
+    'Per',
+    'Cum',
+    'Cmt',
+    'Paz',
+  ];
 
   @override
   void initState() {
@@ -53,7 +63,10 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
     final now = DateTime.now();
     final currentWeekday = now.weekday; // 1 = Monday ... 7 = Sunday
     final startOfWeek = now.subtract(Duration(days: currentWeekday - 1));
-    _weekDays = List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
+    _weekDays = List.generate(
+      7,
+      (index) => startOfWeek.add(Duration(days: index)),
+    );
   }
 
   Future<void> _loadData() async {
@@ -62,7 +75,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
       // Habits list
       final habitsRaw = prefs.getString('personal_habits') ?? '[]';
       _habitsList = List<Map<String, dynamic>>.from(json.decode(habitsRaw));
-      
+
       // If list is empty, put some default ones to guide the user
       if (_habitsList.isEmpty) {
         _habitsList = [
@@ -84,7 +97,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
             'author': 'James Clear',
             'totalPages': 320,
             'currentPage': 140,
-          }
+          },
         ];
       }
     });
@@ -165,7 +178,9 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
   void _updateBookPage(int index, int newPage) {
     final total = _booksList[index]['totalPages'] as int;
     setState(() {
-      _booksList[index]['currentPage'] = newPage > total ? total : (newPage < 0 ? 0 : newPage);
+      _booksList[index]['currentPage'] = newPage > total
+          ? total
+          : (newPage < 0 ? 0 : newPage);
     });
     _saveBooks();
   }
@@ -182,12 +197,17 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF9FAFB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Kişisel Gelişim Asistanı', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Kişisel Gelişim Asistanı',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
       body: Column(
         children: [
@@ -208,7 +228,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                     color: const Color(0xFF8B5CF6).withOpacity(0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
-                  )
+                  ),
                 ],
               ),
               child: Row(
@@ -238,10 +258,15 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
           TabBar(
             controller: _tabController,
             labelColor: const Color(0xFF8B5CF6),
-            unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            unselectedLabelColor: Theme.of(
+              context,
+            ).colorScheme.onSurface.withOpacity(0.5),
             indicatorColor: const Color(0xFF8B5CF6),
             indicatorWeight: 3,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
             tabs: const [
               Tab(text: 'Alışkanlık Takibi'),
               Tab(text: 'Kitap Okuma'),
@@ -252,10 +277,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildHabitsTab(),
-                _buildBooksTab(),
-              ],
+              children: [_buildHabitsTab(), _buildBooksTab()],
             ),
           ),
         ],
@@ -263,14 +285,22 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
     );
   }
 
-  Widget _buildHeaderStat({required IconData icon, required String label, required String value}) {
+  Widget _buildHeaderStat({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
     return Column(
       children: [
         Icon(icon, color: Colors.white, size: 28),
         const SizedBox(height: 6),
         Text(
           value,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
         ),
         const SizedBox(height: 2),
         Text(
@@ -295,8 +325,13 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                   controller: _habitNameController,
                   decoration: const InputDecoration(
                     hintText: 'e.g. 10 sayfa kitap oku, Meditasyon yap',
-                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                   ),
                 ),
               ),
@@ -305,11 +340,16 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                 onPressed: () => _addHabit(_habitNameController.text),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF8B5CF6),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 child: const Icon(Icons.add, color: Colors.white),
-              )
+              ),
             ],
           ),
         ),
@@ -319,20 +359,34 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             children: [
-              const Expanded(flex: 3, child: Text('Alışkanlık', style: TextStyle(fontWeight: FontWeight.bold))),
+              const Expanded(
+                flex: 3,
+                child: Text(
+                  'Alışkanlık',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
               Expanded(
                 flex: 5,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: _weekDays.map((d) {
                     final dayLabel = _weekDayLabels[d.weekday - 1];
-                    final isToday = DateFormat('yyyy-MM-dd').format(d) == DateFormat('yyyy-MM-dd').format(DateTime.now());
+                    final isToday =
+                        DateFormat('yyyy-MM-dd').format(d) ==
+                        DateFormat('yyyy-MM-dd').format(DateTime.now());
                     return Text(
                       dayLabel,
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                        color: isToday ? const Color(0xFF8B5CF6) : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        fontWeight: isToday
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: isToday
+                            ? const Color(0xFF8B5CF6)
+                            : Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.6),
                       ),
                     );
                   }).toList(),
@@ -371,14 +425,21 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                           children: [
                             GestureDetector(
                               onTap: () => _deleteHabit(habitIndex),
-                              child: const Icon(Icons.close, color: Colors.redAccent, size: 16),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.redAccent,
+                                size: 16,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 habit['name'] ?? '',
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
                           ],
@@ -400,16 +461,25 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                               width: 24,
                               height: 24,
                               decoration: BoxDecoration(
-                                color: checked ? const Color(0xFF8B5CF6) : Colors.transparent,
+                                color: checked
+                                    ? const Color(0xFF8B5CF6)
+                                    : Colors.transparent,
                                 border: Border.all(
-                                  color: checked ? const Color(0xFF8B5CF6) : Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                                  color: checked
+                                      ? const Color(0xFF8B5CF6)
+                                      : Theme.of(context).colorScheme.onSurface
+                                            .withOpacity(0.3),
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(6),
                               ),
-                              child: checked 
-                                ? const Icon(Icons.check, size: 16, color: Colors.white) 
-                                : null,
+                              child: checked
+                                  ? const Icon(
+                                      Icons.check,
+                                      size: 16,
+                                      color: Colors.white,
+                                    )
+                                  : null,
                             ),
                           );
                         }).toList(),
@@ -435,11 +505,19 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
           child: ElevatedButton.icon(
             onPressed: _showAddBookDialog,
             icon: const Icon(Icons.book_outlined, color: Colors.white),
-            label: const Text('Yeni Kitap Ekle', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            label: const Text(
+              'Yeni Kitap Ekle',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF8B5CF6),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
           ),
         ),
@@ -450,7 +528,11 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
               ? Center(
                   child: Text(
                     'Henüz okuma günlüğü kaydedilmedi.',
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4)),
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.4),
+                    ),
                   ),
                 )
               : ListView.builder(
@@ -468,7 +550,9 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -482,18 +566,30 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                                   children: [
                                     Text(
                                       book['title'] ?? '',
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       book['author'] ?? '',
-                                      style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withOpacity(0.5),
+                                      ),
                                     ),
                                   ],
                                 ),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.redAccent,
+                                ),
                                 onPressed: () => _deleteBook(index),
                               ),
                             ],
@@ -508,16 +604,24 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                                   child: LinearProgressIndicator(
                                     value: progress,
                                     minHeight: 8,
-                                    backgroundColor: const Color(0xFF8B5CF6).withOpacity(0.1),
-                                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF8B5CF6)),
+                                    backgroundColor: const Color(
+                                      0xFF8B5CF6,
+                                    ).withOpacity(0.1),
+                                    valueColor:
+                                        const AlwaysStoppedAnimation<Color>(
+                                          Color(0xFF8B5CF6),
+                                        ),
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 16),
                               Text(
                                 '${(progress * 100).toInt()}%',
-                                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF8B5CF6)),
-                              )
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF8B5CF6),
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 12),
@@ -527,17 +631,27 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                             children: [
                               Text(
                                 'Sayfa: $current / $total',
-                                style: const TextStyle(fontWeight: FontWeight.w600),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                               Row(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.remove_circle_outline, color: Color(0xFF8B5CF6)),
-                                    onPressed: () => _updateBookPage(index, current - 5),
+                                    icon: const Icon(
+                                      Icons.remove_circle_outline,
+                                      color: Color(0xFF8B5CF6),
+                                    ),
+                                    onPressed: () =>
+                                        _updateBookPage(index, current - 5),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.add_circle_outline, color: Color(0xFF8B5CF6)),
-                                    onPressed: () => _updateBookPage(index, current + 5),
+                                    icon: const Icon(
+                                      Icons.add_circle_outline,
+                                      color: Color(0xFF8B5CF6),
+                                    ),
+                                    onPressed: () =>
+                                        _updateBookPage(index, current + 5),
                                   ),
                                 ],
                               ),
@@ -558,20 +672,31 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Yeni Kitap Ekle', style: TextStyle(fontWeight: FontWeight.bold)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            'Yeni Kitap Ekle',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: _bookTitleController,
-                  decoration: const InputDecoration(labelText: 'Kitap Adı', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Kitap Adı',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: _bookAuthorController,
-                  decoration: const InputDecoration(labelText: 'Yazar', border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    labelText: 'Yazar',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -580,7 +705,10 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                       child: TextField(
                         controller: _bookTotalPagesController,
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Toplam Sayfa', border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                          labelText: 'Toplam Sayfa',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -588,7 +716,10 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
                       child: TextField(
                         controller: _bookCurrentPageController,
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(labelText: 'Kaldığım Sayfa', border: OutlineInputBorder()),
+                        decoration: const InputDecoration(
+                          labelText: 'Kaldığım Sayfa',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                     ),
                   ],
@@ -603,8 +734,16 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen> wit
             ),
             ElevatedButton(
               onPressed: _addBook,
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF8B5CF6)),
-              child: const Text('Ekle', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF8B5CF6),
+              ),
+              child: const Text(
+                'Ekle',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         );

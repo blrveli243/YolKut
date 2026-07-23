@@ -23,7 +23,7 @@ final mainTabIndexProvider = NotifierProvider<MainTabIndexNotifier, int>(() {
 });
 
 class MainScreen extends ConsumerStatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   ConsumerState<MainScreen> createState() => _MainScreenState();
@@ -60,58 +60,64 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           // Sayfa 0: Ana Uygulama (Alt Menülü)
           Scaffold(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            body: IndexedStack(
-              index: currentIndex,
-              children: screens,
-            ),
+            body: IndexedStack(index: currentIndex, children: screens),
             bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).bottomNavigationBarTheme.backgroundColor?.withOpacity(0.9),
-          border: Border(
-            top: BorderSide(color: isDark ? Colors.white12 : Colors.black12, width: 0.5),
-          ),
-        ),
-        child: ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: BottomNavigationBar(
-              currentIndex: currentIndex,
-              onTap: (index) {
-                ref.read(mainTabIndexProvider.notifier).setIndex(index);
-              },
-              backgroundColor: Colors.transparent,
-              type: BottomNavigationBarType.fixed,
-              elevation: 0,
-              selectedItemColor: const Color(0xFF0A84FF),
-              unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
-              selectedFontSize: 12,
-              unselectedFontSize: 12,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.dashboard_rounded),
-                  label: 'Özet',
+              decoration: BoxDecoration(
+                color: Theme.of(
+                  context,
+                ).bottomNavigationBarTheme.backgroundColor?.withOpacity(0.9),
+                border: Border(
+                  top: BorderSide(
+                    color: isDark ? Colors.white12 : Colors.black12,
+                    width: 0.5,
+                  ),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.local_fire_department_rounded),
-                  label: 'Beslenme',
+              ),
+              child: ClipRRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: BottomNavigationBar(
+                    currentIndex: currentIndex,
+                    onTap: (index) {
+                      ref.read(mainTabIndexProvider.notifier).setIndex(index);
+                    },
+                    backgroundColor: Colors.transparent,
+                    type: BottomNavigationBarType.fixed,
+                    elevation: 0,
+                    selectedItemColor: Theme.of(
+                      context,
+                    ).bottomNavigationBarTheme.selectedItemColor,
+                    unselectedItemColor: Theme.of(
+                      context,
+                    ).bottomNavigationBarTheme.unselectedItemColor,
+                    selectedFontSize: 12,
+                    unselectedFontSize: 12,
+                    items: const [
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.dashboard_rounded),
+                        label: 'Özet',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.local_fire_department_rounded),
+                        label: 'Beslenme',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.fitness_center_rounded),
+                        label: 'Antrenman',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.check_circle_outline_rounded),
+                        label: 'Görevler',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.person_rounded),
+                        label: 'Profil',
+                      ),
+                    ],
+                  ),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.fitness_center_rounded),
-                  label: 'Antrenman',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.check_circle_outline_rounded),
-                  label: 'Görevler',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person_rounded),
-                  label: 'Profil',
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
           ),
           // Sayfa 1: Topluluk Ekranı
           const CommunityScreen(),

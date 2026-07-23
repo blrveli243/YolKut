@@ -1,6 +1,6 @@
+import '../../core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'sports_program_screen.dart';
-import 'other_program_screens.dart';
 import 'language_program_screen.dart';
 import 'study_program_screen.dart';
 import 'personal_dev_program_screen.dart';
@@ -8,22 +8,35 @@ import 'other_program_screen.dart';
 import 'yolkut_analytics_screen.dart';
 
 class ProgramsDashboardScreen extends StatelessWidget {
-  const ProgramsDashboardScreen({Key? key}) : super(key: key);
+  const ProgramsDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Program Kategorileri', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Program Kategorileri',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.bar_chart, color: Color(0xFF0A84FF)),
+            icon: const Icon(Icons.bar_chart, color: AppColors.info),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => YolKutAnalyticsScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => YolKutAnalyticsScreen(),
+                ),
+              );
             },
           ),
         ],
@@ -41,7 +54,7 @@ class ProgramsDashboardScreen extends StatelessWidget {
             title: 'Spor Programı',
             subtitle: 'Haftalık egzersiz, set ve tekrarlarınızı planlayın.',
             icon: Icons.fitness_center,
-            color: const Color(0xFFF59E0B), // Orange for sports
+            color: AppColors.warning, // Orange for sports
             destination: const SportsProgramScreen(),
           ),
           _buildCategoryCard(
@@ -49,7 +62,7 @@ class ProgramsDashboardScreen extends StatelessWidget {
             title: 'Ders / Eğitim',
             subtitle: 'Ders çalışma saatlerinizi ve konularınızı yönetin.',
             icon: Icons.menu_book,
-            color: const Color(0xFF3B82F6), // Blue for study
+            color: AppColors.info, // Blue for study
             destination: const StudyProgramScreen(),
           ),
           _buildCategoryCard(
@@ -57,7 +70,7 @@ class ProgramsDashboardScreen extends StatelessWidget {
             title: 'Dil Öğrenimi',
             subtitle: 'Günlük kelime pratiği ve çalışma rutinleri.',
             icon: Icons.language,
-            color: const Color(0xFF10B981), // Green for language
+            color: AppColors.primary, // Green for language
             destination: const LanguageProgramScreen(),
           ),
           _buildCategoryCard(
@@ -91,7 +104,10 @@ class ProgramsDashboardScreen extends StatelessWidget {
   }) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => destination));
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => destination),
+        );
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
@@ -105,7 +121,7 @@ class ProgramsDashboardScreen extends StatelessWidget {
               color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
-            )
+            ),
           ],
         ),
         child: Row(
@@ -135,7 +151,9 @@ class ProgramsDashboardScreen extends StatelessWidget {
                     subtitle,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.6),
                     ),
                   ),
                 ],

@@ -1,3 +1,4 @@
+import '../../core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/data/exercises_db.dart';
@@ -5,10 +6,11 @@ import 'programs_provider.dart';
 import 'select_exercise_screen.dart';
 
 class SportsProgramScreen extends ConsumerStatefulWidget {
-  const SportsProgramScreen({Key? key}) : super(key: key);
+  const SportsProgramScreen({super.key});
 
   @override
-  ConsumerState<SportsProgramScreen> createState() => _SportsProgramScreenState();
+  ConsumerState<SportsProgramScreen> createState() =>
+      _SportsProgramScreenState();
 }
 
 class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
@@ -27,10 +29,18 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Spor Programı', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Spor Programı',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
       body: Column(
         children: [
@@ -50,9 +60,15 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                     width: 60,
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFF0A84FF) : Theme.of(context).cardColor,
+                      color: isSelected
+                          ? AppColors.info
+                          : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: isSelected ? Colors.transparent : Theme.of(context).dividerColor),
+                      border: Border.all(
+                        color: isSelected
+                            ? Colors.transparent
+                            : Theme.of(context).dividerColor,
+                      ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -60,7 +76,11 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                         Text(
                           _days[index],
                           style: TextStyle(
-                            color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                            color: isSelected
+                                ? Colors.white
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.5),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -75,15 +95,31 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
           // Exercises List
           Expanded(
             child: programsState.scheduled.isLoading
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFF0A84FF)))
-              : scheduledExercises.isEmpty
+                ? const Center(
+                    child: CircularProgressIndicator(color: AppColors.info),
+                  )
+                : scheduledExercises.isEmpty
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.calendar_today, size: 64, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+                        Icon(
+                          Icons.calendar_today,
+                          size: 64,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.2),
+                        ),
                         const SizedBox(height: 16),
-                        Text('Bu güne ait bir program yok', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 16)),
+                        Text(
+                          'Bu güne ait bir program yok',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.5),
+                            fontSize: 16,
+                          ),
+                        ),
                       ],
                     ),
                   )
@@ -92,17 +128,17 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                     itemCount: scheduledExercises.length,
                     itemBuilder: (context, index) {
                       final item = scheduledExercises[index];
-                      
+
                       Exercise? exercise;
                       if (item.exerciseId.startsWith('custom_')) {
                         exercise = customExercises.cast<Exercise?>().firstWhere(
-                          (e) => e?.id == item.exerciseId, 
-                          orElse: () => null
+                          (e) => e?.id == item.exerciseId,
+                          orElse: () => null,
                         );
                       } else {
                         exercise = ExercisesDB.getById(item.exerciseId);
                       }
-                      
+
                       if (exercise == null) return const SizedBox.shrink();
 
                       return Container(
@@ -111,42 +147,89 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Theme.of(context).dividerColor),
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                          ),
                         ),
                         child: Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: item.exerciseId.startsWith('custom_') ? Colors.amber.withOpacity(0.1) : const Color(0xFF0A84FF).withOpacity(0.1),
+                                color: item.exerciseId.startsWith('custom_')
+                                    ? Colors.amber.withOpacity(0.1)
+                                    : AppColors.info.withOpacity(0.1),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(exercise.icon, color: item.exerciseId.startsWith('custom_') ? Colors.amber : const Color(0xFF0A84FF)),
+                              child: Icon(
+                                exercise.icon,
+                                color: item.exerciseId.startsWith('custom_')
+                                    ? Colors.amber
+                                    : AppColors.info,
+                              ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(exercise.name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 16)),
+                                  Text(
+                                    exercise.name,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
                                   const SizedBox(height: 4),
-                                  Text(exercise.category, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12)),
+                                  Text(
+                                    exercise.category,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withOpacity(0.5),
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text('${item.targetSets} Set', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
-                                Text('${item.targetReps} Tekrar', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12)),
+                                Text(
+                                  '${item.targetSets} Set',
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '${item.targetReps} Tekrar',
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface.withOpacity(0.5),
+                                    fontSize: 12,
+                                  ),
+                                ),
                               ],
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.red),
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.red,
+                              ),
                               onPressed: () {
-                                ref.read(programsProvider.notifier).removeExercise(item.id);
+                                ref
+                                    .read(programsProvider.notifier)
+                                    .removeExercise(item.id);
                               },
-                            )
+                            ),
                           ],
                         ),
                       );
@@ -157,13 +240,20 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (context) => SelectExerciseScreen(weekday: _selectedWeekday),
-          ));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  SelectExerciseScreen(weekday: _selectedWeekday),
+            ),
+          );
         },
-        backgroundColor: const Color(0xFF0A84FF),
+        backgroundColor: AppColors.info,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Hareket Ekle', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: const Text(
+          'Hareket Ekle',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

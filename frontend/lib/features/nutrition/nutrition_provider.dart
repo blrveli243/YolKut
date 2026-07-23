@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/utils/date_formatter.dart';
 import 'nutrition_repository.dart';
 
 final nutritionRepositoryProvider = Provider((ref) => NutritionRepository());
@@ -9,7 +10,10 @@ class NutritionState {
 
   NutritionState({required this.selectedDate, required this.summary});
 
-  NutritionState copyWith({DateTime? selectedDate, AsyncValue<Map<String, dynamic>>? summary}) {
+  NutritionState copyWith({
+    DateTime? selectedDate,
+    AsyncValue<Map<String, dynamic>>? summary,
+  }) {
     return NutritionState(
       selectedDate: selectedDate ?? this.selectedDate,
       summary: summary ?? this.summary,
@@ -22,27 +26,33 @@ class NutritionNotifier extends Notifier<NutritionState> {
   NutritionState build() {
     final today = DateTime.now();
     Future.microtask(() => fetchSummary(today));
-    return NutritionState(selectedDate: today, summary: const AsyncValue.loading());
+    return NutritionState(
+      selectedDate: today,
+      summary: const AsyncValue.loading(),
+    );
   }
 
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
+  String _formatDate(DateTime date) => DateFormatter.toApiDate(date);
 
   Future<void> fetchSummary(DateTime date) async {
-    state = state.copyWith(selectedDate: date, summary: const AsyncValue<Map<String, dynamic>>.loading());
+    state = state.copyWith(
+      selectedDate: date,
+      summary: const AsyncValue<Map<String, dynamic>>.loading(),
+    );
     try {
       final repo = ref.read(nutritionRepositoryProvider);
       final summary = await repo.fetchDailySummary(_formatDate(date));
       state = state.copyWith(summary: AsyncValue.data(summary));
     } catch (e, stack) {
-      state = state.copyWith(summary: AsyncValue<Map<String, dynamic>>.error(e, stack));
+      state = state.copyWith(
+        summary: AsyncValue<Map<String, dynamic>>.error(e, stack),
+      );
     }
   }
 
   Future<void> changeDate(DateTime date) async {
-    if (state.selectedDate.year == date.year && 
-        state.selectedDate.month == date.month && 
+    if (state.selectedDate.year == date.year &&
+        state.selectedDate.month == date.month &&
         state.selectedDate.day == date.day) {
       return;
     }
@@ -71,6 +81,8 @@ class NutritionNotifier extends Notifier<NutritionState> {
   }
 }
 
-final nutritionProvider = NotifierProvider<NutritionNotifier, NutritionState>(() {
-  return NutritionNotifier();
-});
+final nutritionProvider = NotifierProvider<NutritionNotifier, NutritionState>(
+  () {
+    return NutritionNotifier();
+  },
+);

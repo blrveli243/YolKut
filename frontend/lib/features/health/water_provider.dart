@@ -15,7 +15,7 @@ class WaterNotifier extends Notifier<int> {
     final today = DateTime.now();
     final dateStr = '${today.year}-${today.month}-${today.day}';
     final savedDate = _prefs?.getString('water_date');
-    
+
     if (savedDate == dateStr) {
       state = _prefs?.getInt('water_amount') ?? 0;
     } else {

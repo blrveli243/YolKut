@@ -7,32 +7,38 @@ class ApiClient {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   ApiClient() {
-    dio = Dio(BaseOptions(
-      // Fiziksel telefon bağlantısı için Mac'inizin yerel IP adresi kullanıldı
-      baseUrl: 'http://192.168.0.68:3001',
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ));
+    dio = Dio(
+      BaseOptions(
+        // Fiziksel telefon bağlantısı için Mac'inizin yerel IP adresi kullanıldı
+        baseUrl: 'http://192.168.85.159:3001',
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+      ),
+    );
 
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        try {
-          final token = await _storage.read(key: 'jwt_token').timeout(const Duration(seconds: 3));
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          try {
+            final token = await _storage
+                .read(key: 'jwt_token')
+                .timeout(const Duration(seconds: 3));
+            if (token != null) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
+          } catch (e) {
+            // Ignore timeout or storage errors, just send without token or let it fail downstream
           }
-        } catch (e) {
-          // Ignore timeout or storage errors, just send without token or let it fail downstream
-        }
-        return handler.next(options);
-      },
-      onError: (DioException e, handler) async {
-        if (e.response?.statusCode == 401) {
-          await _storage.delete(key: 'jwt_token');
-        }
-        return handler.next(e);
-      },
-    ));
+          return handler.next(options);
+        },
+        onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 401) {
+            await _storage.delete(key: 'jwt_token');
+          }
+          return handler.next(e);
+        },
+      ),
+    );
   }
 
   Future<void> postHealthData(Map<String, dynamic> data) async {

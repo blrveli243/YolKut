@@ -1,3 +1,4 @@
+import '../../core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/data/exercises_db.dart';
@@ -5,7 +6,7 @@ import 'programs_provider.dart';
 import 'select_exercise_screen.dart';
 
 class ProgramsScreen extends ConsumerStatefulWidget {
-  const ProgramsScreen({Key? key}) : super(key: key);
+  const ProgramsScreen({super.key});
 
   @override
   ConsumerState<ProgramsScreen> createState() => _ProgramsScreenState();
@@ -26,10 +27,18 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Programlarım', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Programlarım',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
       body: Column(
         children: [
@@ -49,9 +58,15 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                     width: 60,
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
-                      color: isSelected ? const Color(0xFF0A84FF) : Theme.of(context).cardColor,
+                      color: isSelected
+                          ? AppColors.info
+                          : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: isSelected ? Colors.transparent : Theme.of(context).dividerColor),
+                      border: Border.all(
+                        color: isSelected
+                            ? Colors.transparent
+                            : Theme.of(context).dividerColor,
+                      ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -59,7 +74,11 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                         Text(
                           _days[index],
                           style: TextStyle(
-                            color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                            color: isSelected
+                                ? Colors.white
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.5),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -78,9 +97,23 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.calendar_today, size: 64, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+                        Icon(
+                          Icons.calendar_today,
+                          size: 64,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.2),
+                        ),
                         const SizedBox(height: 16),
-                        Text('Bu güne ait bir program yok', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 16)),
+                        Text(
+                          'Bu güne ait bir program yok',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.5),
+                            fontSize: 16,
+                          ),
+                        ),
                       ],
                     ),
                   )
@@ -98,42 +131,82 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Theme.of(context).dividerColor),
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                          ),
                         ),
                         child: Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF0A84FF).withOpacity(0.1),
+                                color: AppColors.info.withOpacity(0.1),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(exercise.icon, color: const Color(0xFF0A84FF)),
+                              child: Icon(exercise.icon, color: AppColors.info),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(exercise.name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 16)),
+                                  Text(
+                                    exercise.name,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
                                   const SizedBox(height: 4),
-                                  Text(exercise.category, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12)),
+                                  Text(
+                                    exercise.category,
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withOpacity(0.5),
+                                      fontSize: 12,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text('${item.targetSets} Set', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
-                                Text('${item.targetReps} Tekrar', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12)),
+                                Text(
+                                  '${item.targetSets} Set',
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '${item.targetReps} Tekrar',
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface.withOpacity(0.5),
+                                    fontSize: 12,
+                                  ),
+                                ),
                               ],
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete_outline, color: Colors.red),
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.red,
+                              ),
                               onPressed: () {
-                                ref.read(programsProvider.notifier).removeExercise(item.id);
+                                ref
+                                    .read(programsProvider.notifier)
+                                    .removeExercise(item.id);
                               },
-                            )
+                            ),
                           ],
                         ),
                       );
@@ -144,13 +217,20 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (context) => SelectExerciseScreen(weekday: _selectedWeekday),
-          ));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  SelectExerciseScreen(weekday: _selectedWeekday),
+            ),
+          );
         },
-        backgroundColor: const Color(0xFF0A84FF),
+        backgroundColor: AppColors.info,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Hareket Ekle', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        label: const Text(
+          'Hareket Ekle',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }

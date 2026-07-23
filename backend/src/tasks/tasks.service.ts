@@ -30,7 +30,7 @@ export class TasksService {
     });
 
     const overallTotal = allTasks.length;
-    const overallCompleted = allTasks.filter((t) => t.isCompleted).length;
+    const overallCompleted = allTasks.filter((t: any) => t.isCompleted).length;
     const overallRate =
       overallTotal > 0 ? (overallCompleted / overallTotal) * 100 : 0;
 
@@ -43,10 +43,10 @@ export class TasksService {
       endDate.setDate(endDate.getDate() + 1);
 
       const dailyTasks = allTasks.filter(
-        (t) => t.date >= startDate && t.date < endDate,
+        (t: any) => t.date >= startDate && t.date < endDate,
       );
       const dailyTotal = dailyTasks.length;
-      const dailyCompleted = dailyTasks.filter((t) => t.isCompleted).length;
+      const dailyCompleted = dailyTasks.filter((t: any) => t.isCompleted).length;
       dailyRate = dailyTotal > 0 ? (dailyCompleted / dailyTotal) * 100 : 0;
     }
 

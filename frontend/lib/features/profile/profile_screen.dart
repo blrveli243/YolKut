@@ -1,3 +1,4 @@
+import '../../core/theme/app_colors.dart';
 import 'dart:ui';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -6,9 +7,11 @@ import 'package:image_picker/image_picker.dart';
 import 'profile_provider.dart';
 import '../../core/theme/app_theme_provider.dart';
 import '../../core/api_client.dart';
+import '../auth/auth_repository.dart';
+import '../auth/login_screen.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
@@ -30,7 +33,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _lastNameController = TextEditingController();
 
   bool _isInitialized = false;
-  static const Color _themeColor = Color(0xFF0A84FF); // Elegant iOS Blue
+  static const Color _themeColor = AppColors.info; // Elegant iOS Blue
 
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
@@ -68,8 +71,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     _dailyGoal = data['dailyGoal'];
     _activityLevel = (data['activityLevel'] ?? 1.2).toDouble();
 
-    if (_targetWeight != null) _targetWeightController.text = _targetWeight!.toStringAsFixed(1);
-    if (_targetDays != null) _targetDaysController.text = _targetDays.toString();
+    if (_targetWeight != null) {
+      _targetWeightController.text = _targetWeight!.toStringAsFixed(1);
+    }
+    if (_targetDays != null) {
+      _targetDaysController.text = _targetDays.toString();
+    }
     _isInitialized = true;
   }
 
@@ -306,452 +313,558 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Center(
-                  child: GestureDetector(
-                    onTap: profileState.isLoading ? null : _pickImage,
-                    child: Stack(
-                      alignment: Alignment.bottomRight,
-                      children: [
-                        CircleAvatar(
-                          radius: 70,
-                          backgroundColor: Theme.of(
-                            context,
-                          ).dividerColor.withOpacity(0.2),
-                          backgroundImage:
-                              _photoUrl != null && _photoUrl!.isNotEmpty
-                              ? (_photoUrl!.startsWith('http')
-                                    ? NetworkImage(_photoUrl!) as ImageProvider
-                                    : (_photoUrl!.startsWith('/uploads')
-                                          ? NetworkImage(
-                                                  '${apiClient.dio.options.baseUrl}$_photoUrl',
-                                                )
-                                                as ImageProvider
-                                          : FileImage(File(_photoUrl!))
-                                                as ImageProvider))
-                              : null,
-                          child: _photoUrl == null || _photoUrl!.isEmpty
-                              ? Icon(
-                                  Icons.person,
-                                  size: 80,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface.withOpacity(0.5),
-                                )
-                              : null,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: _themeColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              width: 3,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.camera_alt,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                Text(
-                  _firstNameController.text.isNotEmpty
-                      ? '${_firstNameController.text} ${_lastNameController.text}'
-                            .trim()
-                      : (profile['email'] ?? 'Kullanıcı'),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w900,
-                    color: Theme.of(context).colorScheme.onSurface,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                if (_firstNameController.text.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Text(
-                      profile['email'] ?? '',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withOpacity(0.5),
-                      ),
-                    ),
-                  ),
-
-                const SizedBox(height: 40),
-
-                Text(
-                  'Kişisel Bilgiler',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTextField(
-                        _firstNameController,
-                        'Ad',
-                        Icons.person_outline,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTextField(
-                        _lastNameController,
-                        'Soyad',
-                        Icons.badge_outlined,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-
-                Text(
-                  'Fiziksel Özellikler',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                _buildNumberInput('Boy', _heightController, 'cm'),
-                _buildNumberInput('Kilo', _weightController, 'kg'),
-                _buildNumberInput('Yaş', _ageController, 'yaş'),
-                const SizedBox(height: 12),
-
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Theme.of(context).dividerColor),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Cinsiyet',
-                        style: TextStyle(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withOpacity(0.7),
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: ['Erkek', 'Kadın'].map((g) {
-                          final isSelected = _gender == g;
-                          return Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _gender = g;
-                                });
-                              },
-                              child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isSelected
-                                      ? _themeColor.withOpacity(0.15)
-                                      : Theme.of(
-                                          context,
-                                        ).dividerColor.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? _themeColor
-                                        : Colors.transparent,
-                                    width: 1.5,
-                                  ),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  g,
-                                  style: TextStyle(
-                                    color: isSelected
-                                        ? _themeColor
-                                        : Theme.of(context)
-                                              .colorScheme
-                                              .onSurface
-                                              .withOpacity(0.5),
-                                    fontSize: 16,
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            Theme.of(context).cardColor,
-                            Theme.of(context).cardColor.withOpacity(0.8),
-                          ],
-                        ),
-                        border: Border.all(
-                          color: Theme.of(context).dividerColor,
-                          width: 1.0,
-                        ),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: GestureDetector(
+                      onTap: profileState.isLoading ? null : _pickImage,
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
                         children: [
-                          const Row(
-                            children: [
-                              Icon(
-                                Icons.local_fire_department_rounded,
-                                color: _themeColor,
-                                size: 28,
-                              ),
-                              SizedBox(width: 12),
-                              Text(
-                                'Bazal Metabolizma (BMR)',
-                                style: TextStyle(
-                                  color: _themeColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  'Vücudunuzun dinlenirken yaktığı enerji',
-                                  style: TextStyle(
+                          CircleAvatar(
+                            radius: 70,
+                            backgroundColor: Theme.of(
+                              context,
+                            ).dividerColor.withOpacity(0.2),
+                            backgroundImage:
+                                _photoUrl != null && _photoUrl!.isNotEmpty
+                                ? (_photoUrl!.startsWith('http')
+                                      ? NetworkImage(_photoUrl!)
+                                            as ImageProvider
+                                      : (_photoUrl!.startsWith('/uploads')
+                                            ? NetworkImage(
+                                                    '${apiClient.dio.options.baseUrl}$_photoUrl',
+                                                  )
+                                                  as ImageProvider
+                                            : FileImage(File(_photoUrl!))
+                                                  as ImageProvider))
+                                : null,
+                            child: _photoUrl == null || _photoUrl!.isEmpty
+                                ? Icon(
+                                    Icons.person,
+                                    size: 80,
                                     color: Theme.of(
                                       context,
                                     ).colorScheme.onSurface.withOpacity(0.5),
-                                    fontSize: 12,
-                                    height: 1.4,
-                                  ),
-                                ),
+                                  )
+                                : null,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: _themeColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Theme.of(
+                                  context,
+                                ).scaffoldBackgroundColor,
+                                width: 3,
                               ),
-                              Text(
-                                '${_calculateBMR().round()} kcal',
-                                style: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ],
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
-                // YENİ HEDEFLERİM KARTI
-                Text(
-                  'Hedeflerim & Aktivite',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                  Text(
+                    _firstNameController.text.isNotEmpty
+                        ? '${_firstNameController.text} ${_lastNameController.text}'
+                              .trim()
+                        : (profile['email'] ?? 'Kullanıcı'),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w900,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-
-                _buildNumberInput('Hedef Kilo', _targetWeightController, 'kg'),
-                _buildNumberInput('Hedef Süre', _targetDaysController, 'gün'),
-                const SizedBox(height: 12),
-
-                // Amacımız (dailyGoal)
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Theme.of(context).dividerColor),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Ana Hedefiniz',
+                  if (_firstNameController.text.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        profile['email'] ?? '',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                           fontSize: 14,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.5),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        alignment: WrapAlignment.center,
-                        children: ['Zayıflamak', 'Kilo Almak', 'Kaslanmak'].map((g) {
-                          final isSelected = _dailyGoal == g;
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _dailyGoal = g;
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: isSelected ? _themeColor.withOpacity(0.15) : Theme.of(context).dividerColor.withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: isSelected ? _themeColor : Colors.transparent, width: 1.5),
-                              ),
-                              child: Text(
-                                g,
-                                style: TextStyle(
-                                  color: isSelected ? _themeColor : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                  fontSize: 14,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Aktivite Seviyesi
-                Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Theme.of(context).dividerColor),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Günlük Aktivite Seviyesi',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      DropdownButtonHideUnderline(
-                        child: DropdownButton<double>(
-                          value: [1.2, 1.375, 1.55, 1.725].contains(_activityLevel) ? _activityLevel : 1.2,
-                          isExpanded: true,
-                          dropdownColor: Theme.of(context).cardColor,
-                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14, fontWeight: FontWeight.bold),
-                          items: const [
-                            DropdownMenuItem(value: 1.2, child: Text('Masa Başı / Sedanter (Çok Az)')),
-                            DropdownMenuItem(value: 1.375, child: Text('Az Hareketli (Hafif Egzersiz)')),
-                            DropdownMenuItem(value: 1.55, child: Text('Orta Hareketli (3-5 gün spor)')),
-                            DropdownMenuItem(value: 1.725, child: Text('Çok Hareketli (Ağır spor)')),
-                          ],
-                          onChanged: (val) {
-                            if (val != null) {
-                              setState(() {
-                                _activityLevel = val;
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: _themeColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: _themeColor.withOpacity(0.4),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: ElevatedButton(
-                    onPressed: profileState.isLoading ? null : _saveProfile,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: profileState.isLoading
-                        ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
+
+                  const SizedBox(height: 40),
+
+                  Text(
+                    'Kişisel Bilgiler',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                          _firstNameController,
+                          'Ad',
+                          Icons.person_outline,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildTextField(
+                          _lastNameController,
+                          'Soyad',
+                          Icons.badge_outlined,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+
+                  Text(
+                    'Fiziksel Özellikler',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  _buildNumberInput('Boy', _heightController, 'cm'),
+                  _buildNumberInput('Kilo', _weightController, 'kg'),
+                  _buildNumberInput('Yaş', _ageController, 'yaş'),
+                  const SizedBox(height: 12),
+
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Theme.of(context).dividerColor),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Cinsiyet',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.7),
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: ['Erkek', 'Kadın'].map((g) {
+                            final isSelected = _gender == g;
+                            return Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _gender = g;
+                                  });
+                                },
+                                child: Container(
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? _themeColor.withOpacity(0.15)
+                                        : Theme.of(
+                                            context,
+                                          ).dividerColor.withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? _themeColor
+                                          : Colors.transparent,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    g,
+                                    style: TextStyle(
+                                      color: isSelected
+                                          ? _themeColor
+                                          : Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(0.5),
+                                      fontSize: 16,
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Theme.of(context).cardColor,
+                              Theme.of(context).cardColor.withOpacity(0.8),
+                            ],
+                          ),
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                            width: 1.0,
+                          ),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Column(
+                          children: [
+                            const Row(
+                              children: [
+                                Icon(
+                                  Icons.local_fire_department_rounded,
+                                  color: _themeColor,
+                                  size: 28,
+                                ),
+                                SizedBox(width: 12),
+                                Text(
+                                  'Bazal Metabolizma (BMR)',
+                                  style: TextStyle(
+                                    color: _themeColor,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                        : const Text(
-                            'Değişiklikleri Kaydet',
+                            const SizedBox(height: 16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    'Vücudunuzun dinlenirken yaktığı enerji',
+                                    style: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withOpacity(0.5),
+                                      fontSize: 12,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  '${_calculateBMR().round()} kcal',
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // YENİ HEDEFLERİM KARTI
+                  Text(
+                    'Hedeflerim & Aktivite',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  _buildNumberInput(
+                    'Hedef Kilo',
+                    _targetWeightController,
+                    'kg',
+                  ),
+                  _buildNumberInput('Hedef Süre', _targetDaysController, 'gün'),
+                  const SizedBox(height: 12),
+
+                  // Amacımız (dailyGoal)
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Theme.of(context).dividerColor),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Ana Hedefiniz',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.7),
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          alignment: WrapAlignment.center,
+                          children: ['Zayıflamak', 'Kilo Almak', 'Kaslanmak']
+                              .map((g) {
+                                final isSelected = _dailyGoal == g;
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _dailyGoal = g;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? _themeColor.withOpacity(0.15)
+                                          : Theme.of(
+                                              context,
+                                            ).dividerColor.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? _themeColor
+                                            : Colors.transparent,
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      g,
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? _themeColor
+                                            : Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface
+                                                  .withOpacity(0.5),
+                                        fontSize: 14,
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              })
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Aktivite Seviyesi
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Theme.of(context).dividerColor),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Günlük Aktivite Seviyesi',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.7),
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        DropdownButtonHideUnderline(
+                          child: DropdownButton<double>(
+                            value:
+                                [
+                                  1.2,
+                                  1.375,
+                                  1.55,
+                                  1.725,
+                                ].contains(_activityLevel)
+                                ? _activityLevel
+                                : 1.2,
+                            isExpanded: true,
+                            dropdownColor: Theme.of(context).cardColor,
                             style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
+                            items: const [
+                              DropdownMenuItem(
+                                value: 1.2,
+                                child: Text('Masa Başı / Sedanter (Çok Az)'),
+                              ),
+                              DropdownMenuItem(
+                                value: 1.375,
+                                child: Text('Az Hareketli (Hafif Egzersiz)'),
+                              ),
+                              DropdownMenuItem(
+                                value: 1.55,
+                                child: Text('Orta Hareketli (3-5 gün spor)'),
+                              ),
+                              DropdownMenuItem(
+                                value: 1.725,
+                                child: Text('Çok Hareketli (Ağır spor)'),
+                              ),
+                            ],
+                            onChanged: (val) {
+                              if (val != null) {
+                                setState(() {
+                                  _activityLevel = val;
+                                });
+                              }
+                            },
                           ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 40),
-              ],
+
+                  const SizedBox(height: 40),
+
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: _themeColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: _themeColor.withOpacity(0.4),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: profileState.isLoading ? null : _saveProfile,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: profileState.isLoading
+                          ? const SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              'Değişiklikleri Kaydet',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+
+                  // Çıkış Yap Butonu
+                  TextButton.icon(
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Çıkış Yap'),
+                          content: const Text(
+                            'Hesabınızdan çıkmak istediğinize emin misiniz?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('İptal'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: const Text(
+                                'Çıkış Yap',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (confirm == true && mounted) {
+                        await AuthRepository().logout();
+                        if (mounted) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (_) => const LoginScreen(),
+                            ),
+                            (route) => false,
+                          );
+                        }
+                      }
+                    },
+                    icon: const Icon(Icons.logout, color: Colors.redAccent),
+                    label: const Text(
+                      'Çıkış Yap',
+                      style: TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
-          ));
+          );
         },
       ),
     );

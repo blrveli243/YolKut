@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthDto } from './dto/auth.dto';
@@ -13,6 +14,7 @@ export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async register(dto: AuthDto) {
@@ -55,7 +57,7 @@ export class AuthService {
   private async signToken(userId: number, email: string) {
     const payload = { sub: userId, email };
     const token = await this.jwtService.signAsync(payload, {
-      secret: 'super-secret-key-for-now', // In real app, put in .env
+      secret: this.configService.get<string>('JWT_SECRET'),
       expiresIn: '7d',
     });
 

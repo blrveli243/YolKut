@@ -6,19 +6,19 @@ class AuthRepository {
   final String _tokenKey = 'jwt_token';
 
   Future<void> register(String email, String password) async {
-    final response = await apiClient.dio.post('/auth/register', data: {
-      'email': email,
-      'password': password,
-    });
+    final response = await apiClient.dio.post(
+      '/auth/register',
+      data: {'email': email, 'password': password},
+    );
     final token = response.data['access_token'];
     await _storage.write(key: _tokenKey, value: token);
   }
 
   Future<void> login(String email, String password) async {
-    final response = await apiClient.dio.post('/auth/login', data: {
-      'email': email,
-      'password': password,
-    });
+    final response = await apiClient.dio.post(
+      '/auth/login',
+      data: {'email': email, 'password': password},
+    );
     final token = response.data['access_token'];
     await _storage.write(key: _tokenKey, value: token);
   }

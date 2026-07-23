@@ -23,7 +23,7 @@ class WishlistNotifier extends AsyncNotifier<List<dynamic>> {
     try {
       final repo = ref.read(wishlistRepositoryProvider);
       final newItem = await repo.createItem(title, link: link, price: price);
-      
+
       if (state.hasValue) {
         state = AsyncValue.data([...state.value!, newItem]);
       } else {
@@ -38,7 +38,7 @@ class WishlistNotifier extends AsyncNotifier<List<dynamic>> {
     try {
       final repo = ref.read(wishlistRepositoryProvider);
       await repo.updateItem(id, {'isPurchased': !currentStatus});
-      
+
       if (state.hasValue) {
         final updatedList = state.value!.map((item) {
           if (item['id'] == id) {
@@ -57,14 +57,14 @@ class WishlistNotifier extends AsyncNotifier<List<dynamic>> {
     if (!state.hasValue) return;
 
     final list = List<dynamic>.from(state.value!);
-    
+
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-    
+
     final item = list.removeAt(oldIndex);
     list.insert(newIndex, item);
-    
+
     // Update local state immediately for fast UI response
     state = AsyncValue.data(list);
 
@@ -86,9 +86,11 @@ class WishlistNotifier extends AsyncNotifier<List<dynamic>> {
     try {
       final repo = ref.read(wishlistRepositoryProvider);
       await repo.deleteItem(id);
-      
+
       if (state.hasValue) {
-        state = AsyncValue.data(state.value!.where((item) => item['id'] != id).toList());
+        state = AsyncValue.data(
+          state.value!.where((item) => item['id'] != id).toList(),
+        );
       }
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
@@ -96,6 +98,8 @@ class WishlistNotifier extends AsyncNotifier<List<dynamic>> {
   }
 }
 
-final wishlistProvider = AsyncNotifierProvider<WishlistNotifier, List<dynamic>>(() {
-  return WishlistNotifier();
-});
+final wishlistProvider = AsyncNotifierProvider<WishlistNotifier, List<dynamic>>(
+  () {
+    return WishlistNotifier();
+  },
+);

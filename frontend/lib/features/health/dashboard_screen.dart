@@ -1,8 +1,7 @@
+import '../../core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:ui';
 import 'dart:math';
-import 'dart:io';
 
 import '../programs/programs_dashboard_screen.dart';
 import '../programs/active_workout_screen.dart';
@@ -12,8 +11,9 @@ import 'water_provider.dart';
 import '../../main_screen.dart';
 import '../../core/utils/date_formatter.dart';
 import 'health_provider.dart';
+
 class DashboardScreen extends ConsumerWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +21,9 @@ class DashboardScreen extends ConsumerWidget {
     final nutritionState = ref.watch(nutritionProvider);
     final tasksState = ref.watch(tasksProvider);
     final waterConsumed = ref.watch(waterProvider);
-    final healthState = ref.watch(healthSyncProvider); // Sync with health provider
+    final healthState = ref.watch(
+      healthSyncProvider,
+    ); // Sync with health provider
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -29,8 +31,8 @@ class DashboardScreen extends ConsumerWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Image.asset(
-          'assets/kutyol_logo.png', 
-          height: 48, 
+          'assets/kutyol_logo.png',
+          height: 48,
           fit: BoxFit.contain,
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -41,141 +43,177 @@ class DashboardScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
-              icon: Icon(Icons.landscape_rounded, color: Theme.of(context).colorScheme.onSurface, size: 28),
+              icon: Icon(
+                Icons.landscape_rounded,
+                color: Theme.of(context).colorScheme.onSurface,
+                size: 28,
+              ),
               onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ProgramsDashboardScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProgramsDashboardScreen(),
+                  ),
+                );
               },
             ),
-          )
+          ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await ref.read(nutritionProvider.notifier).fetchSummary(DateTime.now());
-          await ref.read(tasksProvider.notifier).fetchTasksForDate(DateTime.now());
+          await Future.wait([
+            ref.read(nutritionProvider.notifier).fetchSummary(DateTime.now()),
+            ref.read(tasksProvider.notifier).fetchTasksForDate(DateTime.now()),
+            ref.read(healthSyncProvider.notifier).syncData(),
+          ]);
         },
         child: SafeArea(
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 10.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Center(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-                  child: Text(
-                    DateFormatter.toTurkishDate(DateTime.now()),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                    child: Text(
+                      DateFormatter.toTurkishDate(DateTime.now()),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.6),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
-              ),
 
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12.0),
-                  child: Text(
-                    '"Küçük adımlar, büyük hedeflere götürür."',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontStyle: FontStyle.italic,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
+                    child: Text(
+                      '"Küçük adımlar, büyük hedeflere götürür."',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 12),
+                const SizedBox(height: 12),
 
-              _buildRingsSection(nutritionState, waterConsumed, context, ref),
-              
-              const SizedBox(height: 16),
+                _buildRingsSection(nutritionState, waterConsumed, context, ref),
 
-              _buildWaterTracker(waterConsumed, ref, context),
-              
-              const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
-              _buildWorkoutProgress(context),
+                _buildWaterTracker(waterConsumed, ref, context),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildCTAButton(
-                      context, 
-                      ref, 
-                      'Antrenman', 
-                      Icons.fitness_center, 
-                      const Color(0xFFF59E0B),
-                      2
+                _buildWorkoutProgress(context),
+
+                const SizedBox(height: 24),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildCTAButton(
+                        context,
+                        ref,
+                        'Antrenman',
+                        Icons.fitness_center,
+                        AppColors.warning,
+                        2,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildCTAButton(
-                      context, 
-                      ref, 
-                      'Öğün', 
-                      Icons.restaurant_menu, 
-                      const Color(0xFF3B82F6),
-                      1
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _buildCTAButton(
+                        context,
+                        ref,
+                        'Öğün',
+                        Icons.restaurant_menu,
+                        AppColors.info,
+                        1,
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              _buildTaskStats(tasksState, context),
+                _buildTaskStats(tasksState, context),
 
-              const SizedBox(height: 16),
-              _buildDailyTasksTitle(context),
-              const SizedBox(height: 16),
-              _buildDailyTasks(tasksState, ref, context),
-              
-              const SizedBox(height: 40),
-            ],
+                const SizedBox(height: 16),
+                _buildDailyTasksTitle(context),
+                const SizedBox(height: 16),
+                _buildDailyTasks(tasksState, ref, context),
+
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }
 
-  Widget _buildRingsSection(NutritionState state, int waterConsumed, BuildContext context, WidgetRef ref) {
+  Widget _buildRingsSection(
+    NutritionState state,
+    int waterConsumed,
+    BuildContext context,
+    WidgetRef ref,
+  ) {
     double caloriesProgress = 0.0;
     double proteinProgress = 0.0;
-    double waterProgress = waterConsumed / 3000.0; 
+    double waterProgress = waterConsumed / 3000.0;
 
-    const colorCalorie = Color(0xFF3B82F6);
-    const colorProtein = Color(0xFF10B981);
-    const colorWater = Color(0xFF0EA5E9);
+    const colorCalorie = AppColors.info;
+    const colorProtein = AppColors.primary;
+    const colorWater = AppColors.water;
 
     return state.summary.when(
-      loading: () => SizedBox(height: 200, child: Center(child: CircularProgressIndicator(color: colorCalorie))),
-      error: (_, __) => SizedBox(height: 200, child: Center(child: Text("Hata", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)))),
+      loading: () => SizedBox(
+        height: 200,
+        child: Center(child: CircularProgressIndicator(color: colorCalorie)),
+      ),
+      error: (_, __) => SizedBox(
+        height: 200,
+        child: Center(
+          child: Text(
+            "Hata",
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          ),
+        ),
+      ),
       data: (summary) {
         final consumed = (summary['consumedCalories'] ?? 0).toDouble();
         final tdee = (summary['tdee'] ?? 2000).toDouble();
         final bmr = (summary['bmr'] ?? 2000).toDouble();
         final targetCalories = (summary['targetCalories'] ?? tdee).toDouble();
-        
+
         final healthState = ref.read(healthSyncProvider);
         final active = healthState.activeCalories;
         final expectedActive = tdee > bmr ? tdee - bmr : 0.0;
-        final extraActive = active > expectedActive ? active - expectedActive : 0.0;
-        
+        final extraActive = active > expectedActive
+            ? active - expectedActive
+            : 0.0;
+
         final adjustedTarget = targetCalories + extraActive;
         caloriesProgress = adjustedTarget > 0 ? consumed / adjustedTarget : 0.0;
-        
+
         final protein = (summary['macros']?['protein'] ?? 0).toDouble();
-        final targetProtein = (summary['targets']?['protein'] ?? 100).toDouble();
+        final targetProtein = (summary['targets']?['protein'] ?? 100)
+            .toDouble();
         proteinProgress = targetProtein > 0 ? protein / targetProtein : 0.0;
 
         return Container(
@@ -194,32 +232,41 @@ class DashboardScreen extends ConsumerWidget {
                   alignment: Alignment.center,
                   children: [
                     SizedBox(
-                      width: 140, height: 140,
+                      width: 140,
+                      height: 140,
                       child: CircularProgressIndicator(
                         value: min(caloriesProgress, 1.0),
                         strokeWidth: 12,
                         backgroundColor: colorCalorie.withValues(alpha: 0.15),
-                        valueColor: const AlwaysStoppedAnimation<Color>(colorCalorie),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          colorCalorie,
+                        ),
                         strokeCap: StrokeCap.round,
                       ),
                     ),
                     SizedBox(
-                      width: 110, height: 110,
+                      width: 110,
+                      height: 110,
                       child: CircularProgressIndicator(
                         value: min(proteinProgress, 1.0),
                         strokeWidth: 12,
                         backgroundColor: colorProtein.withValues(alpha: 0.15),
-                        valueColor: const AlwaysStoppedAnimation<Color>(colorProtein),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          colorProtein,
+                        ),
                         strokeCap: StrokeCap.round,
                       ),
                     ),
                     SizedBox(
-                      width: 80, height: 80,
+                      width: 80,
+                      height: 80,
                       child: CircularProgressIndicator(
                         value: min(waterProgress, 1.0),
                         strokeWidth: 12,
                         backgroundColor: colorWater.withValues(alpha: 0.15),
-                        valueColor: const AlwaysStoppedAnimation<Color>(colorWater),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          colorWater,
+                        ),
                         strokeCap: StrokeCap.round,
                       ),
                     ),
@@ -230,11 +277,26 @@ class DashboardScreen extends ConsumerWidget {
               Expanded(
                 child: Column(
                   children: [
-                    _buildRingLegend('Kalori', '${consumed.round()}/${adjustedTarget.round()}', colorCalorie, context),
+                    _buildRingLegend(
+                      'Kalori',
+                      '${consumed.round()}/${adjustedTarget.round()}',
+                      colorCalorie,
+                      context,
+                    ),
                     const SizedBox(height: 12),
-                    _buildRingLegend('Protein', '${protein.round()}g/${targetProtein.round()}g', colorProtein, context),
+                    _buildRingLegend(
+                      'Protein',
+                      '${protein.round()}g/${targetProtein.round()}g',
+                      colorProtein,
+                      context,
+                    ),
                     const SizedBox(height: 12),
-                    _buildRingLegend('Su', '${(waterConsumed / 1000).toStringAsFixed(1)}L/3L', colorWater, context),
+                    _buildRingLegend(
+                      'Su',
+                      '${(waterConsumed / 1000).toStringAsFixed(1)}L/3L',
+                      colorWater,
+                      context,
+                    ),
                   ],
                 ),
               ),
@@ -245,20 +307,42 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRingLegend(String title, String value, Color color, BuildContext context) {
+  Widget _buildRingLegend(
+    String title,
+    String value,
+    Color color,
+    BuildContext context,
+  ) {
     return Row(
       children: [
-        Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
         const SizedBox(width: 8),
-        Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7), fontSize: 12)),
+        Text(
+          title,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            fontSize: 12,
+          ),
+        ),
         const Spacer(),
-        Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12, fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildWaterTracker(int consumed, WidgetRef ref, BuildContext context) {
-    const colorWater = Color(0xFF0EA5E9);
+    const colorWater = AppColors.water;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -273,17 +357,43 @@ class DashboardScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Su Tüketimi', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15, fontWeight: FontWeight.w500)),
-              Text('$consumed / 3000 ml', style: const TextStyle(color: colorWater, fontSize: 15, fontWeight: FontWeight.w600)),
+              Text(
+                'Su Tüketimi',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                '$consumed / 3000 ml',
+                style: const TextStyle(
+                  color: colorWater,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildWaterButton(Icons.remove, () => ref.read(waterProvider.notifier).removeWater(), colorWater),
-              Icon(Icons.local_drink_rounded, color: colorWater.withOpacity(0.8), size: 36),
-              _buildWaterButton(Icons.add, () => ref.read(waterProvider.notifier).addWater(), colorWater),
+              _buildWaterButton(
+                Icons.remove,
+                () => ref.read(waterProvider.notifier).removeWater(),
+                colorWater,
+              ),
+              Icon(
+                Icons.local_drink_rounded,
+                color: colorWater.withOpacity(0.8),
+                size: 36,
+              ),
+              _buildWaterButton(
+                Icons.add,
+                () => ref.read(waterProvider.notifier).addWater(),
+                colorWater,
+              ),
             ],
           ),
         ],
@@ -320,8 +430,22 @@ class DashboardScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Haftalık Antrenman', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15, fontWeight: FontWeight.w500)),
-              const Text('3 / 5 Gün', style: TextStyle(color: Color(0xFF10B981), fontSize: 15, fontWeight: FontWeight.w600)),
+              Text(
+                'Haftalık Antrenman',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const Text(
+                '3 / 5 Gün',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -331,7 +455,9 @@ class DashboardScreen extends ConsumerWidget {
               value: 3 / 5,
               minHeight: 6,
               backgroundColor: Theme.of(context).dividerColor,
-              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF10B981)),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                AppColors.primary,
+              ),
             ),
           ),
         ],
@@ -341,7 +467,10 @@ class DashboardScreen extends ConsumerWidget {
 
   Widget _buildTaskStats(TasksState state, BuildContext context) {
     return state.stats.when(
-      loading: () => const SizedBox(height: 120, child: Center(child: CircularProgressIndicator())),
+      loading: () => const SizedBox(
+        height: 120,
+        child: Center(child: CircularProgressIndicator()),
+      ),
       error: (_, __) => const SizedBox.shrink(),
       data: (stats) {
         final double dailyRate = (stats['dailyRate'] ?? 0).toDouble();
@@ -352,8 +481,18 @@ class DashboardScreen extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildCircularGraph('Günlük Başarı', dailyRate, const Color(0xFF10B981), context),
-              _buildCircularGraph('Genel Başarı', overallRate, const Color(0xFF3B82F6), context),
+              _buildCircularGraph(
+                'Günlük Başarı',
+                dailyRate,
+                AppColors.primary,
+                context,
+              ),
+              _buildCircularGraph(
+                'Genel Başarı',
+                overallRate,
+                AppColors.info,
+                context,
+              ),
             ],
           ),
         );
@@ -361,7 +500,12 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCircularGraph(String title, double rate, Color color, BuildContext context) {
+  Widget _buildCircularGraph(
+    String title,
+    double rate,
+    Color color,
+    BuildContext context,
+  ) {
     return Column(
       children: [
         SizedBox(
@@ -373,7 +517,9 @@ class DashboardScreen extends ConsumerWidget {
               CircularProgressIndicator(
                 value: rate / 100,
                 strokeWidth: 10,
-                backgroundColor: Theme.of(context).dividerColor.withOpacity(0.3),
+                backgroundColor: Theme.of(
+                  context,
+                ).dividerColor.withOpacity(0.3),
                 valueColor: AlwaysStoppedAnimation<Color>(color),
                 strokeCap: StrokeCap.round,
               ),
@@ -406,11 +552,25 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildDailyTasksTitle(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: Text('Günlük Planım', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold)),
+      child: Text(
+        'Günlük Planım',
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
-  Widget _buildCTAButton(BuildContext context, WidgetRef ref, String text, IconData icon, Color color, int tabIndex) {
+  Widget _buildCTAButton(
+    BuildContext context,
+    WidgetRef ref,
+    String text,
+    IconData icon,
+    Color color,
+    int tabIndex,
+  ) {
     return GestureDetector(
       onTap: () {
         ref.read(mainTabIndexProvider.notifier).setIndex(tabIndex);
@@ -418,17 +578,23 @@ class DashboardScreen extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFF161618),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFF2C2C2E), width: 1),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
         ),
         child: Column(
           children: [
             Icon(icon, color: color, size: 24),
             const SizedBox(height: 8),
             Text(
-              text, 
-              style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w500, fontSize: 13),
+              text,
+              style: TextStyle(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
             ),
           ],
         ),
@@ -436,21 +602,46 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDailyTasks(TasksState state, WidgetRef ref, BuildContext context) {
+  Widget _buildDailyTasks(
+    TasksState state,
+    WidgetRef ref,
+    BuildContext context,
+  ) {
     return state.tasks.when(
-      loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6))),
-      error: (_, __) => Center(child: Text('Görevler yüklenemedi', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)))),
+      loading: () =>
+          const Center(child: CircularProgressIndicator(color: AppColors.info)),
+      error: (_, __) => Center(
+        child: Text(
+          'Görevler yüklenemedi',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+          ),
+        ),
+      ),
       data: (tasks) {
         if (tasks.isEmpty) {
-          return Center(child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text('Bugün için harika bir gün! Yeni görev ekle.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
-          ));
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Bugün için harika bir gün! Yeni görev ekle.',
+                style: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.5),
+                ),
+              ),
+            ),
+          );
         }
 
         final now = DateTime.now();
         final today = DateTime(now.year, now.month, now.day);
-        final selectedDay = DateTime(state.selectedDate.year, state.selectedDate.month, state.selectedDate.day);
+        final selectedDay = DateTime(
+          state.selectedDate.year,
+          state.selectedDate.month,
+          state.selectedDate.day,
+        );
         final isPastDate = selectedDay.isBefore(today);
 
         final displayTasks = tasks.take(4).toList();
@@ -479,19 +670,32 @@ class DashboardScreen extends ConsumerWidget {
                             margin: const EdgeInsets.only(top: 16),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: isCompleted ? const Color(0xFF10B981) : Colors.transparent,
+                              color: isCompleted
+                                  ? AppColors.primary
+                                  : Colors.transparent,
                               border: Border.all(
-                                color: isCompleted ? const Color(0xFF10B981) : Colors.white.withOpacity(0.5),
+                                color: isCompleted
+                                    ? AppColors.primary
+                                    : Theme.of(context).colorScheme.onSurface
+                                          .withValues(alpha: 0.3),
                                 width: 2,
                               ),
                             ),
-                            child: isCompleted ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
+                            child: isCompleted
+                                ? const Icon(
+                                    Icons.check,
+                                    size: 14,
+                                    color: Colors.white,
+                                  )
+                                : null,
                           ),
                           if (!isLast)
                             Expanded(
                               child: Container(
                                 width: 2,
-                                color: Colors.white.withOpacity(0.3),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.2),
                               ),
                             ),
                         ],
@@ -505,51 +709,93 @@ class DashboardScreen extends ConsumerWidget {
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                            width: 1,
+                          ),
                         ),
                         child: ListTile(
                           onTap: () {
                             if (isPastDate) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Geçmişteki görevler değiştirilemez.')),
+                                const SnackBar(
+                                  content: Text(
+                                    'Geçmişteki görevler değiştirilemez.',
+                                  ),
+                                ),
                               );
                               return;
                             }
                             if (task['isWorkout'] == true && !isCompleted) {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => ActiveWorkoutScreen(date: state.selectedDate)));
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ActiveWorkoutScreen(
+                                    date: state.selectedDate,
+                                  ),
+                                ),
+                              );
                             } else if (task['isWorkout'] != true) {
-                              ref.read(tasksProvider.notifier).toggleTaskCompletion(task['id'], isCompleted);
+                              ref
+                                  .read(tasksProvider.notifier)
+                                  .toggleTaskCompletion(
+                                    task['id'],
+                                    isCompleted,
+                                  );
                             }
                           },
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        title: Row(
-                          children: [
-                            if (task['isWorkout'] == true) const Padding(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child: Icon(Icons.fitness_center, size: 18, color: Color(0xFF0A84FF)),
-                            ),
-                            Expanded(
-                              child: Text(
-                                task['title'],
-                                style: TextStyle(
-                                  color: isCompleted ? Theme.of(context).colorScheme.onSurface.withOpacity(0.5) : Theme.of(context).colorScheme.onSurface,
-                                  decoration: isCompleted ? TextDecoration.lineThrough : null,
-                                  fontWeight: task['isWorkout'] == true ? FontWeight.bold : FontWeight.w500,
-                                  fontSize: 15,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
+                          title: Row(
+                            children: [
+                              if (task['isWorkout'] == true)
+                                const Padding(
+                                  padding: EdgeInsets.only(right: 8.0),
+                                  child: Icon(
+                                    Icons.fitness_center,
+                                    size: 18,
+                                    color: AppColors.info,
+                                  ),
+                                ),
+                              Expanded(
+                                child: Text(
+                                  task['title'],
+                                  style: TextStyle(
+                                    color: isCompleted
+                                        ? Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withOpacity(0.5)
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                    decoration: isCompleted
+                                        ? TextDecoration.lineThrough
+                                        : null,
+                                    fontWeight: task['isWorkout'] == true
+                                        ? FontWeight.bold
+                                        : FontWeight.w500,
+                                    fontSize: 15,
+                                  ),
                                 ),
                               ),
-                            ),
-                            if (task['isWorkout'] == true && !isCompleted)
-                              const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
-                          ],
+                              if (task['isWorkout'] == true && !isCompleted)
+                                const Icon(
+                                  Icons.chevron_right,
+                                  size: 20,
+                                  color: Colors.grey,
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          );
+            );
           }).toList(),
         );
       },

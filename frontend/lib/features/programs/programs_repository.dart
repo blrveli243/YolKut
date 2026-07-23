@@ -11,13 +11,13 @@ class ProgramsRepository {
     }
   }
 
-  Future<Map<String, dynamic>> createCustomExercise(String name, String category) async {
+  Future<Map<String, dynamic>> createCustomExercise(
+    String name,
+    String category,
+  ) async {
     final response = await apiClient.dio.post(
       '/programs/custom-exercises',
-      data: {
-        'name': name,
-        'category': category,
-      },
+      data: {'name': name, 'category': category},
     );
 
     if (response.statusCode == 201) {
@@ -37,7 +37,12 @@ class ProgramsRepository {
     }
   }
 
-  Future<Map<String, dynamic>> addScheduledExercise(int weekday, String exerciseId, int targetSets, int targetReps) async {
+  Future<Map<String, dynamic>> addScheduledExercise(
+    int weekday,
+    String exerciseId,
+    int targetSets,
+    int targetReps,
+  ) async {
     final response = await apiClient.dio.post(
       '/programs/scheduled',
       data: {
@@ -62,4 +67,3 @@ class ProgramsRepository {
     }
   }
 }
-

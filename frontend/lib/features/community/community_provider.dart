@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'community_repository.dart';
 
 enum FriendStatus { none, pending, accepted }
 
@@ -8,6 +10,7 @@ class SocialUser {
   final String avatar;
   final String bio;
   final FriendStatus friendStatus;
+  final bool isMe;
 
   SocialUser({
     required this.id,
@@ -15,17 +18,44 @@ class SocialUser {
     required this.avatar,
     required this.bio,
     this.friendStatus = FriendStatus.none,
+    this.isMe = false,
   });
 
-  SocialUser copyWith({FriendStatus? friendStatus}) {
+  SocialUser copyWith({
+    String? id,
+    String? name,
+    String? avatar,
+    String? bio,
+    FriendStatus? friendStatus,
+    bool? isMe,
+  }) {
     return SocialUser(
-      id: id,
-      name: name,
-      avatar: avatar,
-      bio: bio,
+      id: id ?? this.id,
+      name: name ?? this.name,
+      avatar: avatar ?? this.avatar,
+      bio: bio ?? this.bio,
       friendStatus: friendStatus ?? this.friendStatus,
+      isMe: isMe ?? this.isMe,
     );
   }
+}
+
+class PostComment {
+  final String id;
+  final String authorId;
+  final String authorName;
+  final String authorAvatar;
+  final String timeAgo;
+  final String content;
+
+  PostComment({
+    required this.id,
+    required this.authorId,
+    required this.authorName,
+    required this.authorAvatar,
+    required this.timeAgo,
+    required this.content,
+  });
 }
 
 class Post {
@@ -85,15 +115,19 @@ class ChatSession {
 }
 
 class CommunityState {
-  final List<Post> posts;
-  final Map<String, SocialUser> users;
+  final AsyncValue<List<Post>> posts;
+  final AsyncValue<Map<String, SocialUser>> users;
   final Map<String, ChatSession> chats;
 
-  CommunityState({required this.posts, required this.users, required this.chats});
+  CommunityState({
+    required this.posts,
+    required this.users,
+    required this.chats,
+  });
 
   CommunityState copyWith({
-    List<Post>? posts,
-    Map<String, SocialUser>? users,
+    AsyncValue<List<Post>>? posts,
+    AsyncValue<Map<String, SocialUser>>? users,
     Map<String, ChatSession>? chats,
   }) {
     return CommunityState(
@@ -104,133 +138,216 @@ class CommunityState {
   }
 }
 
+final communityRepositoryProvider = Provider((ref) => CommunityRepository());
+
 class CommunityNotifier extends Notifier<CommunityState> {
   @override
   CommunityState build() {
-    final Map<String, SocialUser> initialUsers = {
-      'u1': SocialUser(
-        id: 'u1',
-        name: 'Ahmet Yılmaz',
-        avatar: 'assets/avatars/male_slim.png',
-        bio: 'Fitness tutkunu, yeni hedeflere doğru! 🏋️‍♂️',
-      ),
-      'u2': SocialUser(
-        id: 'u2',
-        name: 'Ayşe Demir',
-        avatar: 'assets/avatars/female_slim.png',
-        bio: 'Sağlıklı yaşam ve dengeli beslenme üzerine paylaşımlar. 🥗',
-        friendStatus: FriendStatus.accepted,
-      ),
-      'u3': SocialUser(
-        id: 'u3',
-        name: 'Can Korkmaz',
-        avatar: 'assets/avatars/male_overweight.png',
-        bio: 'Maraton koşucusu adayı 🏃‍♂️',
-      ),
-    };
-
-    final List<Post> initialPosts = [
-      Post(
-        id: '1',
-        authorId: 'u1',
-        authorName: 'Ahmet Yılmaz',
-        authorAvatar: 'assets/avatars/male_slim.png',
-        timeAgo: '2 saat önce',
-        content: 'Bugün göğüs antrenmanını bitirdim! Harika bir histi. 💪',
-        initialLikes: 24,
-        initialComments: 5,
-      ),
-      Post(
-        id: '2',
-        authorId: 'u2',
-        authorName: 'Ayşe Demir',
-        authorAvatar: 'assets/avatars/female_slim.png',
-        timeAgo: '4 saat önce',
-        content: 'Öğle yemeği için hazırladığım sağlıklı somon salatası. Bol protein! 🥗🐟',
-        imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&auto=format&fit=crop&q=60',
-        initialLikes: 112,
-        initialComments: 18,
-      ),
-      Post(
-        id: '3',
-        authorId: 'u3',
-        authorName: 'Can Korkmaz',
-        authorAvatar: 'assets/avatars/male_overweight.png',
-        timeAgo: '6 saat önce',
-        content: 'İlk defa 5 km koştum, hedefim yıl sonuna kadar 10 km! 🏃‍♂️',
-        initialLikes: 45,
-        initialComments: 3,
-      ),
-    ];
-
-    final Map<String, ChatSession> initialChats = {
-      'u2': ChatSession(
-        userId: 'u2',
-        messages: [
-          ChatMessage(text: 'Merhaba, somon tarifini alabilir miyim?', isMine: true, time: '14:30'),
-          ChatMessage(text: 'Selam! Tabii ki, birazdan yazıyorum.', isMine: false, time: '14:35'),
-        ],
-      )
-    };
-
-    return CommunityState(posts: initialPosts, users: initialUsers, chats: initialChats);
+    timeago.setLocaleMessages('tr', timeago.TrMessages());
+    Future.microtask(() => _fetchInitialData());
+    return CommunityState(
+      posts: const AsyncValue.loading(),
+      users: const AsyncValue.loading(),
+      chats: {},
+    );
   }
 
-  void toggleLike(String postId) {
-    final newPosts = state.posts.map((post) {
-      if (post.id == postId) {
-        final isLiked = !post.isLikedByMe;
-        return post.copyWith(
-          isLikedByMe: isLiked,
-          initialLikes: post.initialLikes + (isLiked ? 1 : -1),
+  Future<void> refresh() async {
+    await _fetchInitialData();
+  }
+
+  Future<void> _fetchInitialData() async {
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      final fetchedUsers = await repo.getUsers();
+      final fetchedPosts = await repo.getPosts();
+
+      final Map<String, SocialUser> usersMap = {};
+      for (var u in fetchedUsers) {
+        usersMap[u['id'].toString()] = SocialUser(
+          id: u['id'].toString(),
+          name: '${u['firstName']} ${u['lastName']}',
+          avatar: u['photoUrl'] ?? 'assets/avatars/male_average.png',
+          bio: 'YolKut Sporcusu',
+          friendStatus: u['friendStatus'] == 'accepted'
+              ? FriendStatus.accepted
+              : u['friendStatus'] == 'pending'
+                  ? FriendStatus.pending
+                  : FriendStatus.none,
+          isMe: u['isMe'] == true,
         );
       }
-      return post;
-    }).toList();
-    state = state.copyWith(posts: newPosts);
-  }
 
-  void toggleFriendStatus(String userId) {
-    final user = state.users[userId];
-    if (user == null) return;
+      final fetchedConversations = await repo.getConversations();
+      final Map<String, ChatSession> initialChats = {};
+      for (var c in fetchedConversations) {
+        final uid = c['userId'].toString();
+        initialChats[uid] = ChatSession(
+          userId: uid,
+          messages: [
+            ChatMessage(
+              text: c['lastMessage'],
+              isMine: false, // We just need it to show in inbox, we don't know who sent it exactly in this preview, but that's fine for MVP
+              time: _formatTimeAgo(DateTime.parse(c['time'])),
+            )
+          ],
+        );
+      }
 
-    FriendStatus newStatus;
-    if (user.friendStatus == FriendStatus.none) {
-      newStatus = FriendStatus.pending;
-    } else if (user.friendStatus == FriendStatus.pending) {
-      newStatus = FriendStatus.none; // Cancel request
-    } else {
-      newStatus = FriendStatus.none; // Unfriend
+      final List<Post> postsList = fetchedPosts.map((p) {
+        return Post(
+          id: p['id'].toString(),
+          authorId: p['user']['id'].toString(),
+          authorName: '${p['user']['firstName']} ${p['user']['lastName']}',
+          authorAvatar: p['user']['photoUrl'] ?? 'assets/avatars/male_average.png',
+          timeAgo: _formatTimeAgo(DateTime.parse(p['createdAt'])),
+          content: p['content'],
+          imageUrl: p['imageUrl'],
+          initialLikes: p['_count']['likes'],
+          initialComments: p['_count']['comments'],
+          isLikedByMe: p['isLikedByMe'] == true,
+        );
+      }).toList();
+
+      state = state.copyWith(
+        users: AsyncValue.data(usersMap),
+        posts: AsyncValue.data(postsList),
+        chats: initialChats,
+      );
+    } catch (e, st) {
+      state = state.copyWith(
+        users: AsyncValue.error(e, st),
+        posts: AsyncValue.error(e, st),
+      );
     }
-
-    final newUsers = Map<String, SocialUser>.from(state.users);
-    newUsers[userId] = user.copyWith(friendStatus: newStatus);
-    state = state.copyWith(users: newUsers);
   }
 
-  void addMessage(String userId, String text) {
-    final chat = state.chats[userId] ?? ChatSession(userId: userId, messages: []);
-    final newMessages = List<ChatMessage>.from(chat.messages)
-      ..add(ChatMessage(text: text, isMine: true, time: 'Şimdi'));
-    
-    final newChats = Map<String, ChatSession>.from(state.chats);
-    newChats[userId] = ChatSession(userId: userId, messages: newMessages);
-    state = state.copyWith(chats: newChats);
+  String _formatTimeAgo(DateTime date) {
+    return timeago.format(date, locale: 'tr');
   }
 
-  void addPost(String content, String? imagePath) {
-    final newPost = Post(
-      id: DateTime.now().toString(),
-      authorId: 'me',
-      authorName: 'Sen', 
-      authorAvatar: 'assets/avatars/male_average.png',
-      timeAgo: 'Az önce',
-      content: content,
-      imageUrl: imagePath,
-      initialLikes: 0,
-      initialComments: 0,
-    );
-    state = state.copyWith(posts: [newPost, ...state.posts]);
+  Future<void> toggleLike(String postId) async {
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      final isLiked = await repo.toggleLike(int.parse(postId));
+      
+      if (state.posts.hasValue) {
+        final newPosts = state.posts.value!.map((post) {
+          if (post.id == postId) {
+            return post.copyWith(
+              isLikedByMe: isLiked,
+              initialLikes: post.initialLikes + (isLiked ? 1 : -1),
+            );
+          }
+          return post;
+        }).toList();
+        state = state.copyWith(posts: AsyncValue.data(newPosts));
+      }
+    } catch (e) {
+      // Hata durumu
+    }
+  }
+
+  Future<void> addPost(String content, String? imagePath) async {
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      await repo.createPost(content, imagePath);
+      await _fetchInitialData(); // Yeniden yükle
+    } catch (e) {
+      // Hata durumu
+    }
+  }
+
+  Future<void> deletePost(String postId) async {
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      await repo.deletePost(int.parse(postId));
+      await _fetchInitialData(); // Gönderileri yenile
+    } catch (e) {
+      // Hata durumu
+    }
+  }
+
+  Future<List<PostComment>> fetchComments(String postId) async {
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      final fetched = await repo.getComments(int.parse(postId));
+      return fetched.map((c) {
+        return PostComment(
+          id: c['id'].toString(),
+          authorId: c['user']['id'].toString(),
+          authorName: '${c['user']['firstName']} ${c['user']['lastName']}',
+          authorAvatar: c['user']['photoUrl'] ?? 'assets/avatars/male_average.png',
+          timeAgo: _formatTimeAgo(DateTime.parse(c['createdAt'])),
+          content: c['content'],
+        );
+      }).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> addComment(String postId, String content) async {
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      await repo.createComment(int.parse(postId), content);
+      await _fetchInitialData(); // Yorum sayısını güncellemek için yenile
+    } catch (e) {
+      // Hata durumu
+    }
+  }
+
+  Future<void> fetchMessages(String userId) async {
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      final messages = await repo.getMessages(int.parse(userId));
+      
+      final chatMessages = messages.map((m) {
+        return ChatMessage(
+          text: m['content'],
+          isMine: m['senderId'].toString() != userId,
+          time: _formatTimeAgo(DateTime.parse(m['createdAt'])),
+        );
+      }).toList();
+
+      final newChats = Map<String, ChatSession>.from(state.chats);
+      newChats[userId] = ChatSession(userId: userId, messages: chatMessages);
+      state = state.copyWith(chats: newChats);
+    } catch (e) {
+      // Hata durumu
+    }
+  }
+
+  Future<void> addMessage(String userId, String text) async {
+    try {
+      final repo = ref.read(communityRepositoryProvider);
+      await repo.sendMessage(int.parse(userId), text);
+      await fetchMessages(userId);
+    } catch (e) {
+      // Hata durumu
+    }
+  }
+
+  Future<void> toggleFriendStatus(String userId) async {
+    if (state.users.hasValue) {
+      final user = state.users.value![userId];
+      if (user != null) {
+        try {
+          final repo = ref.read(communityRepositoryProvider);
+          final statusString = await repo.toggleFriendStatus(int.parse(userId));
+          
+          final newStatus = statusString == 'accepted' 
+              ? FriendStatus.accepted 
+              : FriendStatus.none;
+
+          final newUsers = Map<String, SocialUser>.from(state.users.value!);
+          newUsers[userId] = user.copyWith(friendStatus: newStatus);
+          state = state.copyWith(users: AsyncValue.data(newUsers));
+        } catch (e) {
+          // Hata durumu
+        }
+      }
+    }
   }
 }
 

@@ -4,9 +4,9 @@ import 'goals_repository.dart';
 class GoalsState {
   final AsyncValue<List<dynamic>> goals;
   final bool isCreating;
-  
+
   GoalsState({required this.goals, this.isCreating = false});
-  
+
   GoalsState copyWith({AsyncValue<List<dynamic>>? goals, bool? isCreating}) {
     return GoalsState(
       goals: goals ?? this.goals,

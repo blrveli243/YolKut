@@ -1,24 +1,26 @@
+import '../../core/theme/app_colors.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 class LanguageProgramScreen extends StatefulWidget {
-  const LanguageProgramScreen({Key? key}) : super(key: key);
+  const LanguageProgramScreen({super.key});
 
   @override
   State<LanguageProgramScreen> createState() => _LanguageProgramScreenState();
 }
 
-class _LanguageProgramScreenState extends State<LanguageProgramScreen> with SingleTickerProviderStateMixin {
+class _LanguageProgramScreenState extends State<LanguageProgramScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   // State Variables
   String _targetLanguage = 'İngilizce';
   String _targetLanguageFlag = '';
   int _streak = 0;
   String _lastStudiedDate = '';
-  
+
   // Daily Goals Status
   bool _goalVocab = false;
   bool _goalImmersion = false;
@@ -34,11 +36,11 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
   final _wordController = TextEditingController();
   final _meaningController = TextEditingController();
   final _sentenceController = TextEditingController();
-  
+
   final _activityController = TextEditingController();
   final _durationController = TextEditingController();
   final _notesController = TextEditingController();
-  
+
   final _sentenceMiningController = TextEditingController();
 
   final List<Map<String, String>> _languages = [
@@ -114,11 +116,14 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
   Future<void> _saveGoals() async {
     final prefs = await SharedPreferences.getInstance();
     final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    
+
     // Update streak if a study goal is done today and last study wasn't today
-    if ((_goalVocab || _goalImmersion || _goalSentence || _goalShadowing) && _lastStudiedDate != todayStr) {
+    if ((_goalVocab || _goalImmersion || _goalSentence || _goalShadowing) &&
+        _lastStudiedDate != todayStr) {
       // Check if yesterday was studied to increment, else set to 1
-      final yesterdayStr = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 1)));
+      final yesterdayStr = DateFormat(
+        'yyyy-MM-dd',
+      ).format(DateTime.now().subtract(const Duration(days: 1)));
       if (_lastStudiedDate == yesterdayStr) {
         _streak += 1;
       } else if (_streak == 0 || _lastStudiedDate != todayStr) {
@@ -144,7 +149,9 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
         setState(() {
           _streak = 0;
         });
-        SharedPreferences.getInstance().then((prefs) => prefs.setInt('lang_streak', 0));
+        SharedPreferences.getInstance().then(
+          (prefs) => prefs.setInt('lang_streak', 0),
+        );
       }
     }
   }
@@ -183,49 +190,67 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF9FAFB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Dil Öğrenim Asistanı', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Dil Öğrenim Asistanı',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
         actions: [
           // Target Language Selection Dropdown
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withOpacity(0.1),
+              color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: DropdownButtonHideUnderline(
               child: DropdownButton<String>(
                 value: _targetLanguage,
-                icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF10B981)),
+                icon: const Icon(
+                  Icons.arrow_drop_down,
+                  color: AppColors.primary,
+                ),
                 onChanged: (String? newValue) async {
                   if (newValue != null) {
-                    final selectedLang = _languages.firstWhere((element) => element['name'] == newValue);
+                    final selectedLang = _languages.firstWhere(
+                      (element) => element['name'] == newValue,
+                    );
                     setState(() {
                       _targetLanguage = newValue;
                       _targetLanguageFlag = selectedLang['flag']!;
                     });
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.setString('lang_target', _targetLanguage);
-                    await prefs.setString('lang_target_flag', _targetLanguageFlag);
+                    await prefs.setString(
+                      'lang_target_flag',
+                      _targetLanguageFlag,
+                    );
                   }
                 },
-                items: _languages.map<DropdownMenuItem<String>>((Map<String, String> value) {
+                items: _languages.map<DropdownMenuItem<String>>((
+                  Map<String, String> value,
+                ) {
                   return DropdownMenuItem<String>(
                     value: value['name'],
                     child: Text(
                       '${value['flag']} ${value['name']}',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   );
                 }).toList(),
               ),
             ),
-          )
+          ),
         ],
       ),
       body: Column(
@@ -237,17 +262,17 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF10B981), Color(0xFF059669)],
+                  colors: [AppColors.primary, Color(0xFF059669)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF10B981).withOpacity(0.3),
+                    color: AppColors.primary.withOpacity(0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
-                  )
+                  ),
                 ],
               ),
               child: Row(
@@ -263,7 +288,9 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                           value: completionRate,
                           strokeWidth: 8,
                           backgroundColor: Colors.white.withOpacity(0.2),
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       ),
                       Text(
@@ -293,7 +320,11 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            const Icon(Icons.local_fire_department, color: Colors.orangeAccent, size: 22),
+                            const Icon(
+                              Icons.local_fire_department,
+                              color: Colors.orangeAccent,
+                              size: 22,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '$_streak Günlük Seri!',
@@ -307,14 +338,14 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          completionRate == 1.0 
+                          completionRate == 1.0
                               ? 'Harika! Bugünün tüm hedeflerini tamamladın!'
                               : 'Bugünü kurtarmak için çalışmaya başla!',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 12,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -327,11 +358,16 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
           TabBar(
             controller: _tabController,
             isScrollable: true,
-            labelColor: const Color(0xFF10B981),
-            unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-            indicatorColor: const Color(0xFF10B981),
+            labelColor: AppColors.primary,
+            unselectedLabelColor: Theme.of(
+              context,
+            ).colorScheme.onSurface.withOpacity(0.5),
+            indicatorColor: AppColors.primary,
             indicatorWeight: 3,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
             tabs: const [
               Tab(text: 'Hedefler'),
               Tab(text: 'Kelime Kartları'),
@@ -369,7 +405,10 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
         const SizedBox(height: 6),
         Text(
           'Günde sadece 4 basit adımı tamamlayarak dil öğreniminizi hızlandırın. Aktif maruziyet ve pratik en iyi taktiklerdir.',
-          style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+          ),
         ),
         const SizedBox(height: 20),
         _buildGoalTile(
@@ -385,7 +424,8 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
         ),
         _buildGoalTile(
           title: 'Dil Maruziyeti (Dinleme/Okuma)',
-          subtitle: 'En az 15-20 dakika podcast, dizi, kitap veya makale incele.',
+          subtitle:
+              'En az 15-20 dakika podcast, dizi, kitap veya makale incele.',
           icon: Icons.hearing,
           color: Colors.amber,
           value: _goalImmersion,
@@ -438,7 +478,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
       child: CheckboxListTile(
         value: value,
         onChanged: onChanged,
-        activeColor: const Color(0xFF10B981),
+        activeColor: AppColors.primary,
         title: Text(
           title,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -470,11 +510,19 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
           child: ElevatedButton.icon(
             onPressed: _showAddVocabDialog,
             icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text('Yeni Kelime Ekle', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            label: const Text(
+              'Yeni Kelime Ekle',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF10B981),
+              backgroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
           ),
         ),
@@ -486,16 +534,32 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.style_outlined, size: 64, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+                      Icon(
+                        Icons.style_outlined,
+                        size: 64,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.2),
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         'Henüz kelime eklenmedi.',
-                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 16),
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.5),
+                          fontSize: 16,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Kelimeleri ekleyin ve dokunarak anlamlarını öğrenin.',
-                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4), fontSize: 12),
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.4),
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -515,7 +579,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                       front: _buildCardHalf(
                         title: item['word'] ?? '',
                         subtitle: 'Dokun ve Çevir',
-                        color: const Color(0xFF10B981).withOpacity(0.05),
+                        color: AppColors.primary.withOpacity(0.05),
                         isFront: true,
                         item: item,
                         index: index,
@@ -549,13 +613,17 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: isFront ? const Color(0xFF10B981).withOpacity(0.3) : const Color(0xFF10B981)),
+        border: Border.all(
+          color: isFront
+              ? AppColors.primary.withOpacity(0.3)
+              : AppColors.primary,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.03),
             blurRadius: 8,
             offset: const Offset(0, 4),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -570,7 +638,11 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: (item['status'] == 'mastered' ? Colors.blue : Colors.orange).withOpacity(0.15),
+                  color:
+                      (item['status'] == 'mastered'
+                              ? Colors.blue
+                              : Colors.orange)
+                          .withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -578,7 +650,9 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: item['status'] == 'mastered' ? Colors.blue : Colors.orange,
+                    color: item['status'] == 'mastered'
+                        ? Colors.blue
+                        : Colors.orange,
                   ),
                 ),
               ),
@@ -590,7 +664,11 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                   });
                   _saveVocabList();
                 },
-                child: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
+                child: const Icon(
+                  Icons.delete_outline,
+                  color: Colors.red,
+                  size: 20,
+                ),
               ),
             ],
           ),
@@ -626,20 +704,30 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  _vocabList[index]['status'] = 
-                      _vocabList[index]['status'] == 'mastered' ? 'learning' : 'mastered';
+                  _vocabList[index]['status'] =
+                      _vocabList[index]['status'] == 'mastered'
+                      ? 'learning'
+                      : 'mastered';
                 });
                 _saveVocabList();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: item['status'] == 'mastered' ? Colors.orange : const Color(0xFF10B981),
+                backgroundColor: item['status'] == 'mastered'
+                    ? Colors.orange
+                    : AppColors.primary,
                 padding: EdgeInsets.zero,
                 minimumSize: const Size(0, 32),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: Text(
                 item['status'] == 'mastered' ? 'Tekrar Al' : 'Öğrendim!',
-                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
         ],
@@ -652,8 +740,13 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
       context: context,
       builder: (context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Yeni Kelime Ekle', style: TextStyle(fontWeight: FontWeight.bold)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            'Yeni Kelime Ekle',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -695,7 +788,8 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
             ),
             ElevatedButton(
               onPressed: () {
-                if (_wordController.text.isNotEmpty && _meaningController.text.isNotEmpty) {
+                if (_wordController.text.isNotEmpty &&
+                    _meaningController.text.isNotEmpty) {
                   setState(() {
                     _vocabList.insert(0, {
                       'word': _wordController.text.trim(),
@@ -711,9 +805,17 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                   Navigator.pop(context);
                 }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
-              child: const Text('Ekle', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            )
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+              ),
+              child: const Text(
+                'Ekle',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ],
         );
       },
@@ -727,14 +829,20 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Maruz Kalma Günlüğü (Immersion Diary)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text(
+            'Maruz Kalma Günlüğü (Immersion Diary)',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 6),
           Text(
             'Bugün hedef dilde ne okudun veya ne dinledin? Bunu kaydetmek beynin dile alışmasını izlemenin en iyi yoludur.',
-            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
           ),
           const SizedBox(height: 20),
-          
+
           // Log form card
           Container(
             padding: const EdgeInsets.all(16),
@@ -750,7 +858,8 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                   decoration: const InputDecoration(
                     labelText: 'Aktivite (Ne yaptınız?)',
                     border: OutlineInputBorder(),
-                    hintText: 'e.g. Luke English Podcast dinledim, BBC makalesi okudum.',
+                    hintText:
+                        'e.g. Luke English Podcast dinledim, BBC makalesi okudum.',
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -769,19 +878,24 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                   decoration: const InputDecoration(
                     labelText: 'Notlar / Yeni İfadeler',
                     border: OutlineInputBorder(),
-                    hintText: 'Bu çalışmada öğrendiğin ilginç kalıpları not et.',
+                    hintText:
+                        'Bu çalışmada öğrendiğin ilginç kalıpları not et.',
                   ),
                   maxLines: 3,
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    if (_activityController.text.isNotEmpty && _durationController.text.isNotEmpty) {
+                    if (_activityController.text.isNotEmpty &&
+                        _durationController.text.isNotEmpty) {
                       setState(() {
                         _journalLogs.insert(0, {
-                          'date': DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now()),
+                          'date': DateFormat(
+                            'dd.MM.yyyy HH:mm',
+                          ).format(DateTime.now()),
                           'activity': _activityController.text.trim(),
-                          'duration': int.tryParse(_durationController.text) ?? 15,
+                          'duration':
+                              int.tryParse(_durationController.text) ?? 15,
                           'note': _notesController.text.trim(),
                         });
                         _activityController.clear();
@@ -792,27 +906,43 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF10B981),
+                    backgroundColor: AppColors.primary,
                     minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Günlüğe Kaydet', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                )
+                  child: const Text(
+                    'Günlüğe Kaydet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          const Text('Geçmiş Çalışmalarım', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            'Geçmiş Çalışmalarım',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
-          
+
           _journalLogs.isEmpty
               ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24.0),
                   child: Center(
                     child: Text(
                       'Henüz maruziyet günlüğü kaydedilmedi.',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4)),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.4),
+                      ),
                     ),
                   ),
                 )
@@ -828,7 +958,9 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -836,7 +968,15 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(log['date'] ?? '', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
+                              Text(
+                                log['date'] ?? '',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                ),
+                              ),
                               GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -844,37 +984,57 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                                   });
                                   _saveJournalLogs();
                                 },
-                                child: const Icon(Icons.close, size: 18, color: Colors.red),
-                              )
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                  color: Colors.red,
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8),
                           Text(
                             log['activity'] ?? '',
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                           const SizedBox(height: 4),
-                          Text('Süre: ${log['duration']} Dakika', style: const TextStyle(fontSize: 13, color: Color(0xFF10B981), fontWeight: FontWeight.w600)),
-                          if (log['note'] != null && log['note'].toString().isNotEmpty) ...[
+                          Text(
+                            'Süre: ${log['duration']} Dakika',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (log['note'] != null &&
+                              log['note'].toString().isNotEmpty) ...[
                             const SizedBox(height: 8),
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).scaffoldBackgroundColor,
+                                color: Theme.of(
+                                  context,
+                                ).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 log['note'],
-                                style: const TextStyle(fontSize: 13, fontStyle: FontStyle.italic),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontStyle: FontStyle.italic,
+                                ),
                               ),
-                            )
-                          ]
+                            ),
+                          ],
                         ],
                       ),
                     );
                   },
-                )
+                ),
         ],
       ),
     );
@@ -887,14 +1047,20 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Cümle Madenciliği (Sentence Mining)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text(
+            'Cümle Madenciliği (Sentence Mining)',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 6),
           Text(
             'Öğrendiğin kelimeleri aktif olarak kullanmak kalıcılığı artırır. Yeni kelimelerle kendi cümlelerini kur ve kaydet.',
-            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
           ),
           const SizedBox(height: 20),
-          
+
           // Form
           Container(
             padding: const EdgeInsets.all(16),
@@ -910,7 +1076,8 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                   decoration: const InputDecoration(
                     labelText: 'Cümleniz',
                     border: OutlineInputBorder(),
-                    hintText: 'Yeni öğrendiğiniz kelimeleri barındıran bir cümle yazın.',
+                    hintText:
+                        'Yeni öğrendiğiniz kelimeleri barındıran bir cümle yazın.',
                   ),
                   maxLines: 3,
                 ),
@@ -920,7 +1087,9 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                     if (_sentenceMiningController.text.isNotEmpty) {
                       setState(() {
                         _sentenceLogs.insert(0, {
-                          'date': DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now()),
+                          'date': DateFormat(
+                            'dd.MM.yyyy HH:mm',
+                          ).format(DateTime.now()),
                           'sentence': _sentenceMiningController.text.trim(),
                         });
                         _sentenceMiningController.clear();
@@ -929,27 +1098,43 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF10B981),
+                    backgroundColor: AppColors.primary,
                     minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Cümleyi Kaydet', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                )
+                  child: const Text(
+                    'Cümleyi Kaydet',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          const Text('Kurduğum Cümleler', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          const Text(
+            'Kurduğum Cümleler',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 12),
-          
+
           _sentenceLogs.isEmpty
               ? Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24.0),
                   child: Center(
                     child: Text(
                       'Henüz cümle kaydedilmedi.',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4)),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.4),
+                      ),
                     ),
                   ),
                 )
@@ -965,7 +1150,9 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                       decoration: BoxDecoration(
                         color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Theme.of(context).dividerColor),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -973,7 +1160,15 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(log['date'] ?? '', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
+                              Text(
+                                log['date'] ?? '',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                ),
+                              ),
                               GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -981,20 +1176,28 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen> with Sing
                                   });
                                   _saveSentenceLogs();
                                 },
-                                child: const Icon(Icons.close, size: 18, color: Colors.red),
-                              )
+                                child: const Icon(
+                                  Icons.close,
+                                  size: 18,
+                                  color: Colors.red,
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8),
                           Text(
                             log['sentence'] ?? '',
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, height: 1.4),
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              height: 1.4,
+                            ),
                           ),
                         ],
                       ),
                     );
                   },
-                )
+                ),
         ],
       ),
     );
@@ -1006,7 +1209,7 @@ class FlipCard extends StatefulWidget {
   final Widget front;
   final Widget back;
 
-  const FlipCard({Key? key, required this.front, required this.back}) : super(key: key);
+  const FlipCard({super.key, required this.front, required this.back});
 
   @override
   State<FlipCard> createState() => _FlipCardState();
@@ -1039,9 +1242,9 @@ class _FlipCardState extends State<FlipCard> {
             },
           );
         },
-        child: _showFront 
-          ? SizedBox(key: const ValueKey('front'), child: widget.front) 
-          : SizedBox(key: const ValueKey('back'), child: widget.back),
+        child: _showFront
+            ? SizedBox(key: const ValueKey('front'), child: widget.front)
+            : SizedBox(key: const ValueKey('back'), child: widget.back),
       ),
     );
   }

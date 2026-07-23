@@ -5,7 +5,11 @@ class WorkoutSetLog {
   final int actualReps;
   final double weightKg;
 
-  WorkoutSetLog({required this.setIndex, required this.actualReps, required this.weightKg});
+  WorkoutSetLog({
+    required this.setIndex,
+    required this.actualReps,
+    required this.weightKg,
+  });
 }
 
 class WorkoutExerciseLog {
@@ -13,7 +17,11 @@ class WorkoutExerciseLog {
   final String exerciseId;
   final List<WorkoutSetLog> sets;
 
-  WorkoutExerciseLog({required this.scheduledExerciseId, required this.exerciseId, required this.sets});
+  WorkoutExerciseLog({
+    required this.scheduledExerciseId,
+    required this.exerciseId,
+    required this.sets,
+  });
 }
 
 class DailyWorkoutLog {
@@ -21,7 +29,11 @@ class DailyWorkoutLog {
   final String date; // YYYY-MM-DD
   final List<WorkoutExerciseLog> exercises;
 
-  DailyWorkoutLog({required this.id, required this.date, required this.exercises});
+  DailyWorkoutLog({
+    required this.id,
+    required this.date,
+    required this.exercises,
+  });
 }
 
 class WorkoutLogsNotifier extends Notifier<List<DailyWorkoutLog>> {
@@ -37,17 +49,15 @@ class WorkoutLogsNotifier extends Notifier<List<DailyWorkoutLog>> {
       exercises: exercises,
     );
     // Overwrite if same date exists, or append
-    state = [
-      ...state.where((l) => l.date != date),
-      newLog
-    ];
+    state = [...state.where((l) => l.date != date), newLog];
   }
-  
+
   bool isWorkoutCompletedToday(String date) {
     return state.any((l) => l.date == date);
   }
 }
 
-final workoutLogsProvider = NotifierProvider<WorkoutLogsNotifier, List<DailyWorkoutLog>>(() {
-  return WorkoutLogsNotifier();
-});
+final workoutLogsProvider =
+    NotifierProvider<WorkoutLogsNotifier, List<DailyWorkoutLog>>(() {
+      return WorkoutLogsNotifier();
+    });

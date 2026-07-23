@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -31,6 +33,14 @@ model User {
   scheduledExercises ScheduledExercise[]
   tasks              Task[]
   wishlists          WishlistItem[]
+  runSessions        RunSession[]
+  posts              Post[]
+  likes              Like[]
+  comments           Comment[]
+  sentRequests       Friendship[] @relation("SentRequests")
+  receivedRequests   Friendship[] @relation("ReceivedRequests")
+  sentMessages       Message[]    @relation("SentMessages")
+  receivedMessages   Message[]    @relation("ReceivedMessages")
 }
 
 model HealthData {
@@ -126,4 +136,69 @@ model ScheduledExercise {
   targetReps Int
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id])
+}
+
+model RunSession {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  distanceKm      Float
+  elapsedSeconds  Int
+  targetSpeedKmH  Float?
+  averageSpeedKmH Float?
+  date            DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+}
+
+model Post {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  content   String
+  imageUrl  String?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id])
+  likes     Like[]
+  comments  Comment[]
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  postId    Int
+  content   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+}
+
+model Friendship {
+  id          Int      @id @default(autoincrement())
+  requesterId Int
+  receiverId  Int
+  status      String   @default("pending") // pending, accepted
+  createdAt   DateTime @default(now())
+  requester   User     @relation("SentRequests", fields: [requesterId], references: [id])
+  receiver    User     @relation("ReceivedRequests", fields: [receiverId], references: [id])
+
+  @@unique([requesterId, receiverId])
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  senderId   Int
+  receiverId Int
+  content    String
+  createdAt  DateTime @default(now())
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
 }

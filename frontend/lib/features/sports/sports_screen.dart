@@ -1,11 +1,13 @@
+import '../../core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../health/health_provider.dart';
 import 'steps_history_screen.dart';
 import 'workout_detail_screen.dart';
+import 'pacer/pace_setup_screen.dart';
 
 class SportsScreen extends ConsumerStatefulWidget {
-  const SportsScreen({Key? key}) : super(key: key);
+  const SportsScreen({super.key});
 
   @override
   ConsumerState<SportsScreen> createState() => _SportsScreenState();
@@ -30,24 +32,37 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Antrenmanlar', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Antrenmanlar',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
         actions: [
           IconButton(
-            icon: Icon(Icons.sync, color: Theme.of(context).colorScheme.onSurface),
+            icon: Icon(
+              Icons.sync,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             onPressed: () {
               ref.read(healthSyncProvider.notifier).syncData();
             },
-          )
+          ),
         ],
       ),
       body: healthState.isLoading && healthState.historicalSteps.isEmpty
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF0A84FF)))
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.info),
+            )
           : healthState.hasError && healthState.historicalSteps.isEmpty
-              ? _buildErrorState()
-              : _buildContent(healthState, isDark),
+          ? _buildErrorState()
+          : _buildContent(healthState, isDark),
     );
   }
 
@@ -62,19 +77,28 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
             const SizedBox(height: 16),
             Text(
               'Apple Health Erişimi Başarısız',
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Lütfen cihazınızın ayarlarından Kutyol uygulamasının "Sağlık" (Health) verilerine erişim izni olduğundan emin olun.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7)),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              ),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => ref.read(healthSyncProvider.notifier).syncData(),
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0A84FF)),
-              child: const Text('Tekrar Dene', style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.info),
+              child: const Text(
+                'Tekrar Dene',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -86,7 +110,7 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
     // Filter workouts based on selected tab
     final now = DateTime.now();
     List<Map<String, dynamic>> filteredWorkouts = [];
-    
+
     if (_selectedFilterIndex == 0) {
       // Today
       filteredWorkouts = state.allWorkouts.where((w) {
@@ -112,39 +136,147 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Bugünün Özeti', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 20, fontWeight: FontWeight.bold)),
+            // PaceMaster (Ritmik Koşu) Giriş Kartı
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PaceSetupScreen(),
+                  ),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primary,
+                      AppColors.primary.withValues(alpha: 0.6),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.speed_rounded,
+                      color: Colors.white,
+                      size: 48,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'PaceMaster Modu',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Ritmini bul, hedef hızını belirle ve koşuya odaklan.',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            Text(
+              'Bugünün Özeti',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const StepsHistoryScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const StepsHistoryScreen(),
+                        ),
+                      );
                     },
-                    child: _buildSummaryCard('Adımlar', '${state.steps}', Icons.directions_walk, const Color(0xFF10B981)),
+                    child: _buildSummaryCard(
+                      'Adımlar',
+                      '${state.steps}',
+                      Icons.directions_walk,
+                      AppColors.primary,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: _buildSummaryCard('Aktif Kalori', '${state.activeCalories.toStringAsFixed(0)} kcal', Icons.local_fire_department, const Color(0xFFF59E0B)),
+                  child: _buildSummaryCard(
+                    'Aktif Kalori',
+                    '${state.activeCalories.toStringAsFixed(0)} kcal',
+                    Icons.local_fire_department,
+                    AppColors.warning,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 32),
-            
+
             // Time Filter Tab Bar
             _buildTimeFilterTabBar(isDark),
             const SizedBox(height: 16),
-            
+
             if (filteredWorkouts.isEmpty)
               Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 32.0),
                   child: Column(
                     children: [
-                      Icon(Icons.pool, size: 48, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3)),
+                      Icon(
+                        Icons.pool,
+                        size: 48,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.3),
+                      ),
                       const SizedBox(height: 12),
-                      Text('Bu zaman aralığında antrenman bulunamadı.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
+                      Text(
+                        'Bu zaman aralığında antrenman bulunamadı.',
+                        style: TextStyle(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.5),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -194,17 +326,27 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? Theme.of(context).cardColor : Colors.transparent,
+            color: isSelected
+                ? Theme.of(context).cardColor
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
-            boxShadow: isSelected ? [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))
-            ] : null,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
           child: Text(
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: isSelected ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: isSelected
+                  ? Theme.of(context).colorScheme.onSurface
+                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               fontSize: 14,
             ),
@@ -214,7 +356,12 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
     );
   }
 
-  Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
+  Widget _buildSummaryCard(
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -222,7 +369,11 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
@@ -230,13 +381,29 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
             child: Icon(icon, color: color, size: 24),
           ),
           const SizedBox(height: 16),
-          Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 14)),
+          Text(
+            title,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              fontSize: 14,
+            ),
+          ),
         ],
       ),
     );
@@ -246,9 +413,10 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
     final type = workout['type'] as String;
     final duration = workout['durationMinutes'] as int;
     final calories = (workout['caloriesBurned'] as num).toDouble();
-    
+
     final date = DateTime.parse(workout['date']);
-    final formattedDate = '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    final formattedDate =
+        '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
 
     IconData getIconForType(String t) {
       if (t == 'Yüzme' || t == 'SWIMMING') return Icons.pool;
@@ -260,7 +428,12 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => WorkoutDetailScreen(workout: workout)));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => WorkoutDetailScreen(workout: workout),
+          ),
+        );
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
@@ -274,28 +447,70 @@ class _SportsScreenState extends ConsumerState<SportsScreen> {
           children: [
             Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: const Color(0xFF0A84FF).withOpacity(0.1), shape: BoxShape.circle),
-              child: Icon(getIconForType(type), color: const Color(0xFF0A84FF), size: 28),
+              decoration: BoxDecoration(
+                color: AppColors.info.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                getIconForType(type),
+                color: AppColors.info,
+                size: 28,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(type, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(
+                    type,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(formattedDate, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 12)),
+                  Text(
+                    formattedDate,
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('$duration dk', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15, fontWeight: FontWeight.w600)),
+                Text(
+                  '$duration dk',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('${calories.toStringAsFixed(0)} kcal', style: const TextStyle(color: Color(0xFFF59E0B), fontSize: 14, fontWeight: FontWeight.w600)),
+                Text(
+                  '${calories.toStringAsFixed(0)} kcal',
+                  style: const TextStyle(
+                    color: AppColors.warning,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Icon(Icons.chevron_right, size: 16, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3)),
+                Icon(
+                  Icons.chevron_right,
+                  size: 16,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.3),
+                ),
               ],
             ),
           ],

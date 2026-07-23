@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -15,48 +14,157 @@ class NotificationService {
 
   // Curated motivational quotes (Atatürk, Stoics, Science, Turkish proverbs, no emojis)
   final List<Map<String, String>> _morningQuotes = [
-    {'author': 'Mustafa Kemal Ataturk', 'quote': 'Tek bir seye ihtiyacimiz vardir: Caliskan olmak.'},
-    {'author': 'Marcus Aurelius', 'quote': 'Gune baslarken kendinize soyleyin: Bugun bilgelik ve sabirla hareket edecegim.'},
-    {'author': 'Albert Einstein', 'quote': 'Ogrenmeyi biraktigin an olmeye baslarsin. Her sabah yeni bir seyle basla.'},
-    {'author': 'Turk Atasozu', 'quote': 'Isleyen demir isildar. Calismak zihni ve bedeni dinc tutar.'},
-    {'author': 'Seneca', 'quote': 'Hayat bir oyun gibidir, onemli olan ne kadar uzun oynandigi degil, ne kadar iyi oynandigidir.'},
-    {'author': 'Steve Jobs', 'quote': 'Zamaniniz kisitli, bu yuzden onu baskasinin hayatini yasayarak harcamayin.'},
-    {'author': 'Mustafa Kemal Ataturk', 'quote': 'Vatanini en cok seven, gorevini en iyi yapandir.'},
-    {'author': 'Aristotle', 'quote': 'Mukemmellik bir eylem degil, bir aliskanliktir. Gunluk rutininizi koruyun.'},
+    {
+      'author': 'Mustafa Kemal Atatürk',
+      'quote': 'Tek bir şeye ihtiyacımız vardır: Çalışkan olmak.',
+    },
+    {
+      'author': 'Marcus Aurelius',
+      'quote':
+          'Güne başlarken kendinize söyleyin: Bugün bilgelik ve sabırla hareket edeceğim.',
+    },
+    {
+      'author': 'Albert Einstein',
+      'quote':
+          'Öğrenmeyi bıraktığın an ölmeye başlarsın. Her sabah yeni bir şeyle başla.',
+    },
+    {
+      'author': 'Türk Atasözü',
+      'quote': 'İşleyen demir ışıldar. Çalışmak zihni ve bedeni dinç tutar.',
+    },
+    {
+      'author': 'Seneca',
+      'quote':
+          'Hayat bir oyun gibidir, önemli olan ne kadar uzun oynandığı değil, ne kadar iyi oynandığıdır.',
+    },
+    {
+      'author': 'Steve Jobs',
+      'quote':
+          'Zamanınız kısıtlı, bu yüzden onu başkasının hayatını yaşayarak harcamayın.',
+    },
+    {
+      'author': 'Mustafa Kemal Atatürk',
+      'quote': 'Vatanını en çok seven, görevini en iyi yapandır.',
+    },
+    {
+      'author': 'Aristotle',
+      'quote':
+          'Mükemmellik bir eylem değil, bir alışkanlıktır. Günlük rutininizi koruyun.',
+    },
   ];
 
   final List<Map<String, String>> _eveningQuotes = [
-    {'author': 'Mustafa Kemal Ataturk', 'quote': 'Hayatta en hakiki mursit ilimdir, fendir.'},
-    {'author': 'Seneca', 'quote': 'Zorluklar zihni guclendirir, tipki calismanin bedeni guclendirdigi gibi.'},
-    {'author': 'Turk Atasozu', 'quote': 'Damlaya damlaya gol olur. Kucuk adimlar buyuk sonuclar dogurur.'},
-    {'author': 'Nikola Tesla', 'quote': 'Yasadigim surece calismaya devam edecegim, zira beni hayatta tutan sey budur.'},
-    {'author': 'Benjamin Franklin', 'quote': 'Bilgiye yapilan yatirim en yuksek faizi getirir.'},
-    {'author': 'Leonardo da Vinci', 'quote': 'Ogrenmek zihni asla yormaz, onu besler ve canlandirir.'},
-    {'author': 'Turk Atasozu', 'quote': 'Emek olmadan yemek olmaz. Basari gayret gerektirir.'},
-    {'author': 'Thomas Edison', 'quote': 'Ben hic hata yapmadim. Sadece calismayan 10.000 yol buldum.'},
+    {
+      'author': 'Mustafa Kemal Atatürk',
+      'quote': 'Hayatta en hakiki mürşit ilimdir, fendir.',
+    },
+    {
+      'author': 'Seneca',
+      'quote':
+          'Zorluklar zihni güçlendirir, tıpkı çalışmanın bedeni güçlendirdiği gibi.',
+    },
+    {
+      'author': 'Türk Atasözü',
+      'quote':
+          'Damlaya damlaya göl olur. Küçük adımlar büyük sonuçlar doğurur.',
+    },
+    {
+      'author': 'Nikola Tesla',
+      'quote':
+          'Yaşadığım sürece çalışmaya devam edeceğim, zira beni hayatta tutan şey budur.',
+    },
+    {
+      'author': 'Benjamin Franklin',
+      'quote': 'Bilgiye yapılan yatırım en yüksek faizi getirir.',
+    },
+    {
+      'author': 'Leonardo da Vinci',
+      'quote': 'Öğrenmek zihni asla yormaz, onu besler ve canlandırır.',
+    },
+    {
+      'author': 'Türk Atasözü',
+      'quote': 'Emek olmadan yemek olmaz. Başarı gayret gerektirir.',
+    },
+    {
+      'author': 'Thomas Edison',
+      'quote': 'Ben hiç hata yapmadım. Sadece çalışmayan 10.000 yol buldum.',
+    },
   ];
 
   final List<Map<String, String>> _nightQuotes = [
-    {'author': 'Mustafa Kemal Ataturk', 'quote': 'Gencligi yetistiriniz. Onlara bilim ve kultur veriniz.'},
-    {'author': 'Marcus Aurelius', 'quote': 'Gunun sonunda zihninizi huzura kavusturun. Yaptiginiz iyi seyleri dusunun.'},
-    {'author': 'Turk Atasozu', 'quote': 'Agac yasken egilir. Ogrenmeye ve gelismeye her yasta devam edin.'},
-    {'author': 'Socrates', 'quote': 'Sorgulanmamis bir hayat yasanmaya degmez. Bugun ne ogrendiniz?'},
-    {'author': 'Seneca', 'quote': 'Yarinin neler getirecegini bilmeden yasa, ama bu gunu en verimli sekilde bitir.'},
-    {'author': 'Albert Einstein', 'quote': 'Karmasikligin ortasinda sadeligi bulun. Zorluklarin icinde firsat yatar.'},
-    {'author': 'Steve Jobs', 'quote': 'Harika isler yapmanin tek yolu, yaptiginiz isi sevmektir.'},
-    {'author': 'Nikola Tesla', 'quote': 'Bizi biz yapan sey, fikirlerimize olan bagliligimiz ve harcadigimiz emektir.'},
+    {
+      'author': 'Mustafa Kemal Atatürk',
+      'quote': 'Gençliği yetiştiriniz. Onlara bilim ve kültür veriniz.',
+    },
+    {
+      'author': 'Marcus Aurelius',
+      'quote':
+          'Günün sonunda zihninizi huzura kavuşturun. Yaptığınız iyi şeyleri düşünün.',
+    },
+    {
+      'author': 'Türk Atasözü',
+      'quote':
+          'Ağaç yaşken eğilir. Öğrenmeye ve gelişmeye her yaşta devam edin.',
+    },
+    {
+      'author': 'Socrates',
+      'quote': 'Sorgulanmamış bir hayat yaşanmaya değmez. Bugün ne öğrendiniz?',
+    },
+    {
+      'author': 'Seneca',
+      'quote':
+          'Yarının neler getireceğini bilmeden yaşa, ama bu günü en verimli şekilde bitir.',
+    },
+    {
+      'author': 'Albert Einstein',
+      'quote':
+          'Karmaşıklığın ortasında sadeliği bulun. Zorlukların içinde fırsat yatar.',
+    },
+    {
+      'author': 'Steve Jobs',
+      'quote': 'Harika işler yapmanın tek yolu, yaptığınız işi sevmektir.',
+    },
+    {
+      'author': 'Nikola Tesla',
+      'quote':
+          'Bizi biz yapan şey, fikirlerimize olan bağlılığımız ve harcadığımız emektir.',
+    },
   ];
 
   // Default words for spaced repetition fallback across various languages (No emojis)
   final List<Map<String, String>> _defaultVocab = [
-    {'word': 'Consistency (Ingilizce: Tutarlilik)', 'meaning': 'Basarinin anahtari her gun adim atmaktir.'},
-    {'word': 'Persistencia (Ispanyolca: Kararlilik)', 'meaning': 'Amaclariniza ulasmak icin yilmadan calismaktir.'},
-    {'word': 'Disziplin (Almanca: Disiplin)', 'meaning': 'Hedefleriniz ile basariniz arasindaki bagdir.'},
-    {'word': 'Apprentissage (Fransizca: Ogrenme)', 'meaning': 'Zihni her zaman dinamik tutar.'},
-    {'word': 'Pazienza (Italyanca: Sabir)', 'meaning': 'Her basarili surecin temelidir.'},
-    {'word': 'Kaizen (Japonca: Surekli Gelisim)', 'meaning': 'Her gun kucuk adimlarla kendinizi gelistirmektir.'},
-    {'word': 'Al-Azima (Arapca: Azim)', 'meaning': 'Zorluklar karsisinda direnmek ve basariya ulasmaktir.'},
-    {'word': 'Trud (Rusca: Emek)', 'meaning': 'Gelisimin ve basarinin temel tasidir.'},
+    {
+      'word': 'Consistency (İngilizce: Tutarlılık)',
+      'meaning': 'Başarının anahtarı her gün adım atmaktır.',
+    },
+    {
+      'word': 'Persistencia (İspanyolca: Kararlılık)',
+      'meaning': 'Amaçlarınıza ulaşmak için yılmadan çalışmaktır.',
+    },
+    {
+      'word': 'Disziplin (Almanca: Disiplin)',
+      'meaning': 'Hedefleriniz ile başarınız arasındaki bağdır.',
+    },
+    {
+      'word': 'Apprentissage (Fransızca: Öğrenme)',
+      'meaning': 'Zihni her zaman dinamik tutar.',
+    },
+    {
+      'word': 'Pazienza (İtalyanca: Sabır)',
+      'meaning': 'Her başarılı sürecin temelidir.',
+    },
+    {
+      'word': 'Kaizen (Japonca: Sürekli Gelişim)',
+      'meaning': 'Her gün küçük adımlarla kendinizi geliştirmektir.',
+    },
+    {
+      'word': 'Al-Azima (Arapça: Azim)',
+      'meaning': 'Zorluklar karşısında direnmek ve başarıya ulaşmaktır.',
+    },
+    {
+      'word': 'Trud (Rusça: Emek)',
+      'meaning': 'Gelişimin ve başarının temel taşıdır.',
+    },
   ];
 
   Future<void> init() async {
@@ -64,13 +172,13 @@ class NotificationService {
 
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-    
+
     const DarwinInitializationSettings iosSettings =
         DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
     const InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
@@ -91,10 +199,12 @@ class NotificationService {
     required DateTime scheduledTime,
     int minutesBefore = 15,
   }) async {
-    final reminderTime = scheduledTime.subtract(Duration(minutes: minutesBefore));
-    
+    final reminderTime = scheduledTime.subtract(
+      Duration(minutes: minutesBefore),
+    );
+
     if (reminderTime.isBefore(DateTime.now())) {
-      return; 
+      return;
     }
 
     final androidDetails = const AndroidNotificationDetails(
@@ -111,7 +221,10 @@ class NotificationService {
       presentSound: true,
     );
 
-    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
 
     await _localNotificationsPlugin.zonedSchedule(
       id: id,
@@ -149,7 +262,10 @@ class NotificationService {
       presentSound: true,
     );
 
-    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
 
     final now = DateTime.now();
 
@@ -188,7 +304,8 @@ class NotificationService {
       if (vocabList.isNotEmpty) {
         final item = vocabList[(day - 1) % vocabList.length];
         vocabTitle = 'Kelime Hatirlatici: ${item['word'] ?? ''}';
-        vocabBody = 'Anlami: ${item['meaning'] ?? ''}. Cumle: ${item['sentence'] ?? ''}';
+        vocabBody =
+            'Anlami: ${item['meaning'] ?? ''}. Cumle: ${item['sentence'] ?? ''}';
       } else {
         final item = _defaultVocab[(day - 1) % _defaultVocab.length];
         vocabTitle = 'Kelimeni Ogren: ${item['word']}';

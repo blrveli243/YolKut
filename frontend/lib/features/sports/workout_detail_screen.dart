@@ -1,18 +1,20 @@
+import '../../core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class WorkoutDetailScreen extends StatelessWidget {
   final Map<String, dynamic> workout;
 
-  const WorkoutDetailScreen({Key? key, required this.workout}) : super(key: key);
+  const WorkoutDetailScreen({super.key, required this.workout});
 
   @override
   Widget build(BuildContext context) {
     final type = workout['type'] as String;
     final duration = workout['durationMinutes'] as int;
     final calories = (workout['caloriesBurned'] as num).toDouble();
-    
+
     final date = DateTime.parse(workout['date']);
-    final formattedDate = '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    final formattedDate =
+        '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
 
     IconData getIconForType(String t) {
       if (t == 'Yüzme' || t == 'SWIMMING') return Icons.pool;
@@ -27,10 +29,18 @@ class WorkoutDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Antrenman Detayı', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        title: Text(
+          'Antrenman Detayı',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
       body: SafeArea(
         child: Padding(
@@ -42,46 +52,80 @@ class WorkoutDetailScreen extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0A84FF).withOpacity(0.1),
+                    color: AppColors.info.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(getIconForType(type), size: 80, color: const Color(0xFF0A84FF)),
+                  child: Icon(
+                    getIconForType(type),
+                    size: 80,
+                    color: AppColors.info,
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
               Text(
                 type,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 32, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 formattedDate,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 16),
+                style: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.5),
+                  fontSize: 16,
+                ),
               ),
               const SizedBox(height: 48),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildStatItem(context, 'Süre', '$duration dk', Icons.timer, const Color(0xFF10B981)),
-                  _buildStatItem(context, 'Kalori', '${calories.toStringAsFixed(0)} kcal', Icons.local_fire_department, const Color(0xFFF59E0B)),
+                  _buildStatItem(
+                    context,
+                    'Süre',
+                    '$duration dk',
+                    Icons.timer,
+                    AppColors.primary,
+                  ),
+                  _buildStatItem(
+                    context,
+                    'Kalori',
+                    '${calories.toStringAsFixed(0)} kcal',
+                    Icons.local_fire_department,
+                    AppColors.warning,
+                  ),
                 ],
               ),
               const Spacer(),
               ElevatedButton.icon(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Antrenman Planları entegrasyonu çok yakında!')),
+                    const SnackBar(
+                      content: Text(
+                        'Antrenman Planları entegrasyonu çok yakında!',
+                      ),
+                    ),
                   );
                 },
                 icon: const Icon(Icons.add_task),
-                label: const Text('Antrenman Planları İle Bağla', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                label: const Text(
+                  'Antrenman Planları İle Bağla',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: const Color(0xFF0A84FF),
+                  backgroundColor: AppColors.info,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -92,7 +136,13 @@ class WorkoutDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Column(
       children: [
         Container(
@@ -104,9 +154,22 @@ class WorkoutDetailScreen extends StatelessWidget {
           child: Icon(icon, color: color, size: 32),
         ),
         const SizedBox(height: 12),
-        Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 24, fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 4),
-        Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5), fontSize: 14)),
+        Text(
+          label,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            fontSize: 14,
+          ),
+        ),
       ],
     );
   }

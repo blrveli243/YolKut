@@ -10,15 +10,11 @@ import 'core/services/notification_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
-  runApp(
-    const ProviderScope(
-      child: HealthApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: HealthApp()));
 }
 
 class HealthApp extends ConsumerWidget {
-  const HealthApp({Key? key}) : super(key: key);
+  const HealthApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,14 +22,16 @@ class HealthApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
-      title: 'Health App',
+      title: 'YolKut',
       theme: AppThemes.lightTheme,
       darkTheme: AppThemes.darkTheme,
       themeMode: themeMode,
       debugShowCheckedModeBanner: false,
       home: authCheck.when(
-        data: (isLoggedIn) => isLoggedIn ? const MainScreen() : const LoginScreen(),
-        loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+        data: (isLoggedIn) =>
+            isLoggedIn ? const MainScreen() : const LoginScreen(),
+        loading: () =>
+            const Scaffold(body: Center(child: CircularProgressIndicator())),
         error: (_, __) => const LoginScreen(),
       ),
     );

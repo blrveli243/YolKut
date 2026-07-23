@@ -54,13 +54,13 @@ class ProgramsNotifier extends Notifier<ProgramsState> {
     );
     try {
       final repo = ref.read(programsRepositoryProvider);
-      
+
       final customFuture = repo.getCustomExercises();
       final scheduledFuture = repo.getScheduledExercises();
-      
+
       final results = await Future.wait([customFuture, scheduledFuture]);
-      final customData = results[0] as List<dynamic>;
-      final scheduledData = results[1] as List<dynamic>;
+      final customData = results[0];
+      final scheduledData = results[1];
 
       final customExercisesList = customData.map((e) {
         return Exercise(
@@ -93,10 +93,20 @@ class ProgramsNotifier extends Notifier<ProgramsState> {
     }
   }
 
-  Future<void> addExercise(int weekday, String exerciseId, int targetSets, int targetReps) async {
+  Future<void> addExercise(
+    int weekday,
+    String exerciseId,
+    int targetSets,
+    int targetReps,
+  ) async {
     try {
       final repo = ref.read(programsRepositoryProvider);
-      await repo.addScheduledExercise(weekday, exerciseId, targetSets, targetReps);
+      await repo.addScheduledExercise(
+        weekday,
+        exerciseId,
+        targetSets,
+        targetReps,
+      );
       await _fetchData();
     } catch (e) {
       rethrow;

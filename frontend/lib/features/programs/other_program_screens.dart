@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-
-
-
-
-Widget _buildPlaceholderScreen(BuildContext context, String title, IconData icon, Color color) {
+Widget _buildPlaceholderScreen(
+  BuildContext context,
+  String title,
+  IconData icon,
+  Color color,
+) {
   return Scaffold(
     appBar: AppBar(
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),

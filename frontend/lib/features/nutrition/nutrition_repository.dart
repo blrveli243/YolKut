@@ -2,7 +2,9 @@ import '../../core/api_client.dart';
 
 class NutritionRepository {
   Future<Map<String, dynamic>> fetchDailySummary(String date) async {
-    final response = await apiClient.dio.get('/nutrition/daily-summary?date=$date');
+    final response = await apiClient.dio.get(
+      '/nutrition/daily-summary?date=$date',
+    );
     return response.data;
   }
 

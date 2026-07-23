@@ -1,11 +1,13 @@
+import '../../core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_provider.dart';
 import 'register_screen.dart';
-import '../health/dashboard_screen.dart';
+import '../../main_screen.dart';
+import '../../core/widgets/primary_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -26,10 +28,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      ref.read(authProvider.notifier).login(
-            _emailController.text.trim(),
-            _passwordController.text,
-          );
+      ref
+          .read(authProvider.notifier)
+          .login(_emailController.text.trim(), _passwordController.text);
     }
   }
 
@@ -38,12 +39,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next == AuthState.success) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const DashboardScreen()),
+          MaterialPageRoute(builder: (_) => const MainScreen()),
         );
       } else if (next == AuthState.error) {
         final msg = ref.read(authProvider.notifier).errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(msg ?? 'Hata oluştu'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text(msg ?? 'Hata oluştu'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     });
@@ -52,7 +56,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = state == AuthState.loading;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F4F6),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -62,12 +66,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Icon(Icons.health_and_safety, size: 80, color: Colors.blue),
+                const Icon(
+                  Icons.health_and_safety,
+                  size: 80,
+                  color: AppColors.info,
+                ),
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Tekrar Hoş Geldiniz!',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
                 const SizedBox(height: 32),
                 TextFormField(
@@ -75,11 +87,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   decoration: InputDecoration(
                     labelText: 'E-posta',
                     prefixIcon: const Icon(Icons.email),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value == null || value.isEmpty || !value.contains('@')) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        !value.contains('@')) {
                       return 'Geçerli bir e-posta adresi giriniz.';
                     }
                     return null;
@@ -93,12 +109,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     labelText: 'Şifre',
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
                       onPressed: () {
-                         setState(() { _obscurePassword = !_obscurePassword; });
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
                       },
                     ),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.length < 6) {
@@ -108,16 +132,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: isLoading ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    backgroundColor: Colors.blue,
-                  ),
-                  child: isLoading
-                      ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Giriş Yap', style: TextStyle(fontSize: 18, color: Colors.white)),
+                PrimaryButton(
+                  text: 'Giriş Yap',
+                  onPressed: _submit,
+                  isLoading: isLoading,
                 ),
                 const SizedBox(height: 16),
                 TextButton(
@@ -126,7 +144,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       MaterialPageRoute(builder: (_) => const RegisterScreen()),
                     );
                   },
-                  child: const Text("Hesabınız yok mu? Kayıt Olun", style: TextStyle(color: Colors.blue)),
+                  child: const Text(
+                    "Hesabınız yok mu? Kayıt Olun",
+                    style: TextStyle(color: AppColors.info),
+                  ),
                 ),
               ],
             ),

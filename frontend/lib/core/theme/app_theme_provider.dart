@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'app_colors.dart';
 
 class AppThemeNotifier extends Notifier<ThemeMode> {
   static const _storage = FlutterSecureStorage();
@@ -14,7 +15,9 @@ class AppThemeNotifier extends Notifier<ThemeMode> {
 
   Future<void> _loadTheme() async {
     try {
-      final savedTheme = await _storage.read(key: _themeKey).timeout(const Duration(seconds: 3));
+      final savedTheme = await _storage
+          .read(key: _themeKey)
+          .timeout(const Duration(seconds: 3));
       if (savedTheme != null) {
         state = savedTheme == 'light' ? ThemeMode.light : ThemeMode.dark;
       }
@@ -26,7 +29,12 @@ class AppThemeNotifier extends Notifier<ThemeMode> {
   Future<void> toggleTheme() async {
     state = state == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
     try {
-      await _storage.write(key: _themeKey, value: state == ThemeMode.light ? 'light' : 'dark').timeout(const Duration(seconds: 3));
+      await _storage
+          .write(
+            key: _themeKey,
+            value: state == ThemeMode.light ? 'light' : 'dark',
+          )
+          .timeout(const Duration(seconds: 3));
     } catch (e) {
       // Ignore
     }
@@ -40,48 +48,56 @@ final themeProvider = NotifierProvider<AppThemeNotifier, ThemeMode>(() {
 class AppThemes {
   static final lightTheme = ThemeData(
     brightness: Brightness.light,
-    scaffoldBackgroundColor: const Color(0xFFF2F2F7), // iOS Light Gray
-    cardColor: Colors.white,
+    scaffoldBackgroundColor: AppColors.lightBackground,
+    cardColor: AppColors.lightCard,
     fontFamily: 'Inter',
     colorScheme: const ColorScheme.light(
-      primary: Color(0xFF0A84FF),
-      surface: Colors.white,
-      onSurface: Colors.black87,
+      primary: AppColors.primary,
+      surface: AppColors.lightCard,
+      onSurface: AppColors.lightText,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      iconTheme: IconThemeData(color: Colors.black87),
-      titleTextStyle: TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.bold),
+      iconTheme: IconThemeData(color: AppColors.lightText),
+      titleTextStyle: TextStyle(
+        color: AppColors.lightText,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
     ),
-    dividerColor: const Color(0xFFE5E5EA), // Light divider
+    dividerColor: AppColors.lightDivider,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Colors.white,
-      selectedItemColor: Color(0xFF0A84FF),
+      backgroundColor: AppColors.lightCard,
+      selectedItemColor: AppColors.primary,
       unselectedItemColor: Colors.black38,
     ),
   );
 
   static final darkTheme = ThemeData(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: const Color(0xFF0F0F13), // Premium Dark
-    cardColor: const Color(0xFF161618), // Dark card
+    scaffoldBackgroundColor: AppColors.darkBackground,
+    cardColor: AppColors.darkCard,
     fontFamily: 'Inter',
     colorScheme: const ColorScheme.dark(
-      primary: Color(0xFF0A84FF),
-      surface: Color(0xFF1C1C1E),
-      onSurface: Colors.white,
+      primary: AppColors.primary,
+      surface: AppColors.darkCard,
+      onSurface: AppColors.darkText,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      iconTheme: IconThemeData(color: Colors.white),
-      titleTextStyle: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+      iconTheme: IconThemeData(color: AppColors.darkText),
+      titleTextStyle: TextStyle(
+        color: AppColors.darkText,
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
     ),
-    dividerColor: const Color(0xFF2C2C2E), // Dark divider
+    dividerColor: AppColors.darkDivider,
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: Color(0xFF161618),
-      selectedItemColor: Color(0xFF32D74B),
+      backgroundColor: AppColors.darkBackground,
+      selectedItemColor: AppColors.primary,
       unselectedItemColor: Colors.white54,
     ),
   );
