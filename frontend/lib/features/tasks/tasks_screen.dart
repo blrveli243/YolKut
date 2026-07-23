@@ -42,10 +42,10 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
+                  Text(
                     'Yeni Görev',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -152,6 +152,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                   ),
                   // Hatırlatıcı Süresi
                   if (selectedTime != null) ...[
+                    const SizedBox(height: 16),
                     DropdownButtonFormField<int>(
                       initialValue: reminderOffset,
                       dropdownColor: Theme.of(context).cardColor,
@@ -298,9 +299,10 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
       height: 90,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: 365, // 1 year window into the future
+        itemCount: 365, // 1 year window
+        controller: ScrollController(initialScrollOffset: 30.0 * 68.0), // Approximate scroll to center today
         itemBuilder: (context, index) {
-          final date = DateTime.now().add(Duration(days: index));
+          final date = DateTime.now().subtract(const Duration(days: 30)).add(Duration(days: index));
           final isSelected =
               date.year == selectedDate.year &&
               date.month == selectedDate.month &&
@@ -333,7 +335,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                           ? Colors.white
                           : Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.5),
+                            ).colorScheme.onSurface.withValues(alpha: 0.5),
                       fontSize: 12,
                     ),
                   ),
@@ -418,7 +420,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                       style: TextStyle(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.5),
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                         fontSize: 16,
                       ),
                     ),
@@ -489,7 +491,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: isCompleted
-                                ? AppColors.primary.withOpacity(0.3)
+                                ? AppColors.primary.withValues(alpha: 0.3)
                                 : Theme.of(context).dividerColor,
                           ),
                         ),
@@ -515,8 +517,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
                                     color: isCompleted
-                                        ? AppColors.primary.withOpacity(0.1)
-                                        : AppColors.info.withOpacity(0.1),
+                                        ? AppColors.primary.withValues(alpha: 0.1)
+                                        : AppColors.info.withValues(alpha: 0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
@@ -536,7 +538,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                                   side: BorderSide(
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.onSurface.withOpacity(0.5),
+                                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                                     width: 2,
                                   ),
                                   shape: const CircleBorder(),
@@ -558,7 +560,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                               color: isCompleted
                                   ? Theme.of(
                                       context,
-                                    ).colorScheme.onSurface.withOpacity(0.5)
+                                    ).colorScheme.onSurface.withValues(alpha: 0.5)
                                   : Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
@@ -585,7 +587,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                                             color: Theme.of(context)
                                                 .colorScheme
                                                 .onSurface
-                                                .withOpacity(0.7),
+                                                .withValues(alpha: 0.7),
                                             fontSize: 13,
                                           ),
                                         ),
@@ -605,7 +607,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .onSurface
-                                                  .withOpacity(0.7),
+                                                  .withValues(alpha: 0.7),
                                               fontSize: 13,
                                             ),
                                             overflow: TextOverflow.ellipsis,
@@ -619,7 +621,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: AppColors.info.withOpacity(
+                                            color: AppColors.info.withValues(alpha: 
                                               0.2,
                                             ),
                                             borderRadius: BorderRadius.circular(
@@ -656,7 +658,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                               Icons.more_vert,
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.5),
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
                             ),
                             onPressed: () {
                               showModalBottomSheet(

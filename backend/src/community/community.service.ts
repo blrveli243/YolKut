@@ -160,6 +160,7 @@ export class CommunityService {
           userId: otherUserId,
           user: otherUser,
           lastMessage: msg.content,
+          isMine: msg.senderId === userId,
           time: msg.createdAt,
         });
       }

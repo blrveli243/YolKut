@@ -27,14 +27,14 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color),
@@ -58,7 +58,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
                   style: TextStyle(
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withOpacity(0.5),
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                     fontSize: 13,
                   ),
                 ),
@@ -140,7 +140,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
                 style: TextStyle(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.5),
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                   fontSize: 16,
                 ),
               ),
@@ -150,7 +150,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
                 style: TextStyle(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.3),
+                  ).colorScheme.onSurface.withValues(alpha: 0.3),
                   fontSize: 14,
                 ),
               ),
@@ -182,7 +182,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
           Text(
             '-',
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               fontSize: 24,
             ),
           ),
@@ -195,7 +195,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
           Text(
             '=',
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               fontSize: 24,
             ),
           ),
@@ -226,7 +226,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
         Text(
           label,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             fontSize: 12,
           ),
         ),
@@ -257,7 +257,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
                 style: TextStyle(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.7),
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
               ),
@@ -326,7 +326,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
                           ? Colors.black54
                           : Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.5),
+                            ).colorScheme.onSurface.withValues(alpha: 0.5),
                       fontSize: 12,
                     ),
                   ),
@@ -534,7 +534,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
                                   style: TextStyle(
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.onSurface.withOpacity(0.5),
+                                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -729,7 +729,7 @@ class _FoodSearchSheetState extends ConsumerState<_FoodSearchSheet> {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.amber.withOpacity(0.2),
+                              color: Colors.amber.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: const Text(
@@ -1146,7 +1146,7 @@ class _RecipeBuilderSheetState extends ConsumerState<_RecipeBuilderSheet> {
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(24),
               ),
-              border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -78,7 +78,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                                 ? Colors.white
                                 : Theme.of(
                                     context,
-                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -102,7 +102,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                           size: 64,
                           color: Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.2),
+                          ).colorScheme.onSurface.withValues(alpha: 0.2),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -110,7 +110,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                           style: TextStyle(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.5),
+                            ).colorScheme.onSurface.withValues(alpha: 0.5),
                             fontSize: 16,
                           ),
                         ),
@@ -140,7 +140,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: AppColors.info.withOpacity(0.1),
+                                color: AppColors.info.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(exercise.icon, color: AppColors.info),
@@ -166,7 +166,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
-                                      ).colorScheme.onSurface.withOpacity(0.5),
+                                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -190,7 +190,7 @@ class _ProgramsScreenState extends ConsumerState<ProgramsScreen> {
                                   style: TextStyle(
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.onSurface.withOpacity(0.5),
+                                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                                     fontSize: 12,
                                   ),
                                 ),

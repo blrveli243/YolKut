@@ -264,7 +264,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen>
             labelColor: AppColors.info,
             unselectedLabelColor: Theme.of(
               context,
-            ).colorScheme.onSurface.withOpacity(0.5),
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
             indicatorColor: AppColors.info,
             indicatorWeight: 3,
             labelStyle: const TextStyle(
@@ -323,7 +323,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen>
         border: Border.all(color: Theme.of(context).dividerColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -337,7 +337,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen>
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 16),
@@ -381,7 +381,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen>
                       fontWeight: FontWeight.bold,
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.6),
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -392,7 +392,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen>
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: (isIncrease ? Colors.green : Colors.red).withOpacity(
+                  color: (isIncrease ? Colors.green : Colors.red).withValues(alpha: 
                     0.12,
                   ),
                   borderRadius: BorderRadius.circular(12),
@@ -425,7 +425,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen>
                 : 'Ilerlemeyi korumak icin hedeflerinizi gozden gecirin.',
             style: TextStyle(
               fontSize: 11,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -479,7 +479,7 @@ class _YolKutAnalyticsScreenState extends ConsumerState<YolKutAnalyticsScreen>
                     width: 48,
                     height: height2 < 10 ? 10 : height2,
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.4),
+                      color: color.withValues(alpha: 0.4),
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(12),
                       ),

@@ -72,7 +72,7 @@ class UserProfileScreen extends ConsumerWidget {
                   fontSize: 15,
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.7),
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ),
@@ -235,7 +235,7 @@ class UserProfileScreen extends ConsumerWidget {
                         style: TextStyle(
                           color: Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.5),
+                          ).colorScheme.onSurface.withValues(alpha: 0.5),
                           fontSize: 12,
                         ),
                       ),
@@ -282,7 +282,7 @@ class UserProfileScreen extends ConsumerWidget {
                             ? AppColors.error
                             : Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.5),
+                              ).colorScheme.onSurface.withValues(alpha: 0.5),
                         size: 24,
                       ),
                       const SizedBox(width: 6),
@@ -291,7 +291,7 @@ class UserProfileScreen extends ConsumerWidget {
                         style: TextStyle(
                           color: Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.7),
+                          ).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w600,
                         ),
                       ),

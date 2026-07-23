@@ -144,7 +144,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                               hintStyle: TextStyle(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.onSurface.withOpacity(0.5),
+                                ).colorScheme.onSurface.withValues(alpha: 0.5),
                               ),
                               border: InputBorder.none,
                             ),
@@ -173,7 +173,7 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.6),
+                                  color: Colors.black.withValues(alpha: 0.6),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(

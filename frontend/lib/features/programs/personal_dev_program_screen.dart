@@ -225,7 +225,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen>
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF8B5CF6).withOpacity(0.3),
+                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -260,7 +260,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen>
             labelColor: const Color(0xFF8B5CF6),
             unselectedLabelColor: Theme.of(
               context,
-            ).colorScheme.onSurface.withOpacity(0.5),
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
             indicatorColor: const Color(0xFF8B5CF6),
             indicatorWeight: 3,
             labelStyle: const TextStyle(
@@ -305,7 +305,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen>
         const SizedBox(height: 2),
         Text(
           label,
-          style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 11),
         ),
       ],
     );
@@ -386,7 +386,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen>
                             ? const Color(0xFF8B5CF6)
                             : Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.6),
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     );
                   }).toList(),
@@ -468,7 +468,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen>
                                   color: checked
                                       ? const Color(0xFF8B5CF6)
                                       : Theme.of(context).colorScheme.onSurface
-                                            .withOpacity(0.3),
+                                            .withValues(alpha: 0.3),
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(6),
@@ -531,7 +531,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen>
                     style: TextStyle(
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.4),
+                      ).colorScheme.onSurface.withValues(alpha: 0.4),
                     ),
                   ),
                 )
@@ -579,7 +579,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen>
                                         color: Theme.of(context)
                                             .colorScheme
                                             .onSurface
-                                            .withOpacity(0.5),
+                                            .withValues(alpha: 0.5),
                                       ),
                                     ),
                                   ],
@@ -606,7 +606,7 @@ class _PersonalDevProgramScreenState extends State<PersonalDevProgramScreen>
                                     minHeight: 8,
                                     backgroundColor: const Color(
                                       0xFF8B5CF6,
-                                    ).withOpacity(0.1),
+                                    ).withValues(alpha: 0.1),
                                     valueColor:
                                         const AlwaysStoppedAnimation<Color>(
                                           Color(0xFF8B5CF6),

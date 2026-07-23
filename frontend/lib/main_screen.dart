@@ -65,7 +65,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               decoration: BoxDecoration(
                 color: Theme.of(
                   context,
-                ).bottomNavigationBarTheme.backgroundColor?.withOpacity(0.9),
+                ).bottomNavigationBarTheme.backgroundColor?.withValues(alpha: 0.9),
                 border: Border(
                   top: BorderSide(
                     color: isDark ? Colors.white12 : Colors.black12,

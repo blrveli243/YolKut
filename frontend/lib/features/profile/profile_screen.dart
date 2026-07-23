@@ -135,6 +135,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     await ref.read(profileProvider.notifier).updateProfile(data);
 
     if (mounted && ref.read(profileProvider).hasError == false) {
+      _isInitialized = false; // Reset so next build uses updated data
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text(
@@ -172,7 +173,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           prefixIcon: Icon(icon, color: _themeColor),
           labelText: label,
           labelStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
@@ -203,7 +204,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Text(
             label,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               fontSize: 16,
             ),
           ),
@@ -249,7 +250,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 style: TextStyle(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.5),
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -325,7 +326,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             radius: 70,
                             backgroundColor: Theme.of(
                               context,
-                            ).dividerColor.withOpacity(0.2),
+                            ).dividerColor.withValues(alpha: 0.2),
                             backgroundImage:
                                 _photoUrl != null && _photoUrl!.isNotEmpty
                                 ? (_photoUrl!.startsWith('http')
@@ -345,7 +346,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     size: 80,
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.onSurface.withOpacity(0.5),
+                                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                                   )
                                 : null,
                           ),
@@ -396,7 +397,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           fontSize: 14,
                           color: Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.5),
+                          ).colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
                       ),
                     ),
@@ -463,7 +464,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           style: TextStyle(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.7),
+                            ).colorScheme.onSurface.withValues(alpha: 0.7),
                             fontSize: 14,
                           ),
                         ),
@@ -488,10 +489,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: isSelected
-                                        ? _themeColor.withOpacity(0.15)
+                                        ? _themeColor.withValues(alpha: 0.15)
                                         : Theme.of(
                                             context,
-                                          ).dividerColor.withOpacity(0.5),
+                                          ).dividerColor.withValues(alpha: 0.5),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: isSelected
@@ -509,7 +510,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                           : Theme.of(context)
                                                 .colorScheme
                                                 .onSurface
-                                                .withOpacity(0.5),
+                                                .withValues(alpha: 0.5),
                                       fontSize: 16,
                                       fontWeight: isSelected
                                           ? FontWeight.bold
@@ -538,7 +539,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             end: Alignment.bottomRight,
                             colors: [
                               Theme.of(context).cardColor,
-                              Theme.of(context).cardColor.withOpacity(0.8),
+                              Theme.of(context).cardColor.withValues(alpha: 0.8),
                             ],
                           ),
                           border: Border.all(
@@ -578,7 +579,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
-                                      ).colorScheme.onSurface.withOpacity(0.5),
+                                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                                       fontSize: 12,
                                       height: 1.4,
                                     ),
@@ -637,7 +638,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           style: TextStyle(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.7),
+                            ).colorScheme.onSurface.withValues(alpha: 0.7),
                             fontSize: 14,
                           ),
                         ),
@@ -662,10 +663,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? _themeColor.withOpacity(0.15)
+                                          ? _themeColor.withValues(alpha: 0.15)
                                           : Theme.of(
                                               context,
-                                            ).dividerColor.withOpacity(0.5),
+                                            ).dividerColor.withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
                                         color: isSelected
@@ -682,7 +683,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                             : Theme.of(context)
                                                   .colorScheme
                                                   .onSurface
-                                                  .withOpacity(0.5),
+                                                  .withValues(alpha: 0.5),
                                         fontSize: 14,
                                         fontWeight: isSelected
                                             ? FontWeight.bold
@@ -714,7 +715,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           style: TextStyle(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.7),
+                            ).colorScheme.onSurface.withValues(alpha: 0.7),
                             fontSize: 14,
                           ),
                         ),
@@ -776,7 +777,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       color: _themeColor,
                       boxShadow: [
                         BoxShadow(
-                          color: _themeColor.withOpacity(0.4),
+                          color: _themeColor.withValues(alpha: 0.4),
                           blurRadius: 15,
                           offset: const Offset(0, 5),
                         ),

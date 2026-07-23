@@ -128,7 +128,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
           padding: const EdgeInsets.symmetric(vertical: 20),
           decoration: BoxDecoration(
             color: isSelected
-                ? color.withOpacity(0.15)
+                ? color.withValues(alpha: 0.15)
                 : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
@@ -138,7 +138,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
             boxShadow: isSelected
                 ? [
                     BoxShadow(
-                      color: color.withOpacity(0.3),
+                      color: color.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -151,7 +151,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                 icon,
                 color: isSelected
                     ? color
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 size: 32,
               ),
               const SizedBox(height: 12),
@@ -163,7 +163,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                       ? Theme.of(context).colorScheme.onSurface
                       : Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.5),
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 14,
                 ),
@@ -229,7 +229,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                 icon,
                 color: isSelected
                     ? Colors.white
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 size: 24,
               ),
               const SizedBox(height: 4),
@@ -240,7 +240,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                       ? Colors.white
                       : Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.5),
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                   fontSize: 12,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
@@ -272,7 +272,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
           Text(
             label,
             style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               fontSize: 16,
             ),
           ),
@@ -313,7 +313,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                 style: TextStyle(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.5),
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -384,13 +384,13 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                themeColor.withOpacity(0.2),
+                themeColor.withValues(alpha: 0.2),
                 Theme.of(context).brightness == Brightness.dark
-                    ? Colors.black.withOpacity(0.5)
-                    : Colors.white.withOpacity(0.5),
+                    ? Colors.black.withValues(alpha: 0.5)
+                    : Colors.white.withValues(alpha: 0.5),
               ],
             ),
-            border: Border.all(color: themeColor.withOpacity(0.3), width: 1.5),
+            border: Border.all(color: themeColor.withValues(alpha: 0.3), width: 1.5),
             borderRadius: BorderRadius.circular(24),
           ),
           child: Column(
@@ -421,7 +421,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                     style: TextStyle(
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.7),
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                       fontSize: 14,
                     ),
                   ),
@@ -446,7 +446,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                   style: TextStyle(
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withOpacity(0.5),
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                     fontSize: 13,
                     height: 1.5,
                   ),
@@ -482,7 +482,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                 style: TextStyle(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.5),
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                   height: 1.5,
                 ),
               ),
@@ -527,7 +527,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.info.withOpacity(0.2),
+                          color: AppColors.info.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -550,7 +550,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
                         style: TextStyle(
                           color: Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.7),
+                          ).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontSize: 14,
                         ),
                       ),
@@ -723,7 +723,7 @@ class _GoalsScreenState extends ConsumerState<GoalsScreen>
           labelColor: Theme.of(context).colorScheme.onSurface,
           unselectedLabelColor: Theme.of(
             context,
-          ).colorScheme.onSurface.withOpacity(0.5),
+          ).colorScheme.onSurface.withValues(alpha: 0.5),
           tabs: const [
             Tab(text: 'Fiziksel Hedef'),
             Tab(text: 'Kişisel Hedefler'),

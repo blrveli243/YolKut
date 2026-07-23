@@ -9,8 +9,8 @@ class ApiClient {
   ApiClient() {
     dio = Dio(
       BaseOptions(
-        // Fiziksel telefon bağlantısı için Mac'inizin yerel IP adresi kullanıldı
-        baseUrl: 'http://192.168.85.159:3001',
+        // Canlı Render sunucusu bağlantısı
+        baseUrl: 'https://yolkut-backend.onrender.com',
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
       ),

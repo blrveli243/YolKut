@@ -121,11 +121,11 @@ class _SelectExerciseScreenState extends ConsumerState<SelectExerciseScreen> {
                               width: 1.5,
                             ),
                           ),
-                          tileColor: AppColors.info.withOpacity(0.05),
+                          tileColor: AppColors.info.withValues(alpha: 0.05),
                           leading: Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppColors.info.withOpacity(0.1),
+                              color: AppColors.info.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.add, color: AppColors.info),
@@ -165,8 +165,8 @@ class _SelectExerciseScreenState extends ConsumerState<SelectExerciseScreen> {
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: isCustom
-                                  ? Colors.amber.withOpacity(0.1)
-                                  : AppColors.info.withOpacity(0.1),
+                                  ? Colors.amber.withValues(alpha: 0.1)
+                                  : AppColors.info.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -191,7 +191,7 @@ class _SelectExerciseScreenState extends ConsumerState<SelectExerciseScreen> {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.amber.withOpacity(0.2),
+                                    color: Colors.amber.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: const Text(
@@ -367,7 +367,7 @@ class _SelectExerciseScreenState extends ConsumerState<SelectExerciseScreen> {
                       filled: true,
                       fillColor: Theme.of(
                         context,
-                      ).dividerColor.withOpacity(0.1),
+                      ).dividerColor.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -382,7 +382,7 @@ class _SelectExerciseScreenState extends ConsumerState<SelectExerciseScreen> {
                       filled: true,
                       fillColor: Theme.of(
                         context,
-                      ).dividerColor.withOpacity(0.1),
+                      ).dividerColor.withValues(alpha: 0.1),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,

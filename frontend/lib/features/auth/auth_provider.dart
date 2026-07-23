@@ -47,6 +47,5 @@ final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {
 
 final authCheckProvider = FutureProvider<bool>((ref) async {
   final repo = ref.read(authRepositoryProvider);
-  final token = await repo.getToken();
-  return token != null;
+  return await repo.verifyToken();
 });

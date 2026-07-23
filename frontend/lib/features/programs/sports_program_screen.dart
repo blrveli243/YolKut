@@ -80,7 +80,7 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                                 ? Colors.white
                                 : Theme.of(
                                     context,
-                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -108,7 +108,7 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                           size: 64,
                           color: Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.2),
+                          ).colorScheme.onSurface.withValues(alpha: 0.2),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -116,7 +116,7 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                           style: TextStyle(
                             color: Theme.of(
                               context,
-                            ).colorScheme.onSurface.withOpacity(0.5),
+                            ).colorScheme.onSurface.withValues(alpha: 0.5),
                             fontSize: 16,
                           ),
                         ),
@@ -157,8 +157,8 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: item.exerciseId.startsWith('custom_')
-                                    ? Colors.amber.withOpacity(0.1)
-                                    : AppColors.info.withOpacity(0.1),
+                                    ? Colors.amber.withValues(alpha: 0.1)
+                                    : AppColors.info.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -189,7 +189,7 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                                     style: TextStyle(
                                       color: Theme.of(
                                         context,
-                                      ).colorScheme.onSurface.withOpacity(0.5),
+                                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                                       fontSize: 12,
                                     ),
                                   ),
@@ -213,7 +213,7 @@ class _SportsProgramScreenState extends ConsumerState<SportsProgramScreen> {
                                   style: TextStyle(
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.onSurface.withOpacity(0.5),
+                                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                                     fontSize: 12,
                                   ),
                                 ),

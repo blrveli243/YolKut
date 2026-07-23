@@ -86,7 +86,7 @@ class DashboardScreen extends ConsumerWidget {
                       style: TextStyle(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.6),
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
@@ -324,7 +324,7 @@ class DashboardScreen extends ConsumerWidget {
         Text(
           title,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             fontSize: 12,
           ),
         ),
@@ -386,7 +386,7 @@ class DashboardScreen extends ConsumerWidget {
               ),
               Icon(
                 Icons.local_drink_rounded,
-                color: colorWater.withOpacity(0.8),
+                color: colorWater.withValues(alpha: 0.8),
                 size: 36,
               ),
               _buildWaterButton(
@@ -519,7 +519,7 @@ class DashboardScreen extends ConsumerWidget {
                 strokeWidth: 10,
                 backgroundColor: Theme.of(
                   context,
-                ).dividerColor.withOpacity(0.3),
+                ).dividerColor.withValues(alpha: 0.3),
                 valueColor: AlwaysStoppedAnimation<Color>(color),
                 strokeCap: StrokeCap.round,
               ),
@@ -540,7 +540,7 @@ class DashboardScreen extends ConsumerWidget {
         Text(
           title,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -614,7 +614,7 @@ class DashboardScreen extends ConsumerWidget {
         child: Text(
           'Görevler yüklenemedi',
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ),
       ),
@@ -628,7 +628,7 @@ class DashboardScreen extends ConsumerWidget {
                 style: TextStyle(
                   color: Theme.of(
                     context,
-                  ).colorScheme.onSurface.withOpacity(0.5),
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ),
@@ -767,7 +767,7 @@ class DashboardScreen extends ConsumerWidget {
                                         ? Theme.of(context)
                                               .colorScheme
                                               .onSurface
-                                              .withOpacity(0.5)
+                                              .withValues(alpha: 0.5)
                                         : Theme.of(
                                             context,
                                           ).colorScheme.onSurface,

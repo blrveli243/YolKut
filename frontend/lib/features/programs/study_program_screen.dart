@@ -217,7 +217,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.info.withOpacity(0.3),
+                    color: AppColors.info.withValues(alpha: 0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -252,7 +252,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
             labelColor: AppColors.info,
             unselectedLabelColor: Theme.of(
               context,
-            ).colorScheme.onSurface.withOpacity(0.5),
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
             indicatorColor: AppColors.info,
             indicatorWeight: 3,
             labelStyle: const TextStyle(
@@ -302,7 +302,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
         const SizedBox(height: 2),
         Text(
           label,
-          style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 11),
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 11),
         ),
       ],
     );
@@ -338,7 +338,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
           'Günü verimli geçirmek için çalışma programınızı kontrol edin.',
           style: TextStyle(
             fontSize: 14,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(height: 20),
@@ -421,7 +421,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
         secondary: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: color, size: 24),
@@ -453,7 +453,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
                 boxShadow: [
                   BoxShadow(
                     color: (_isBreak ? AppColors.primary : AppColors.info)
-                        .withOpacity(0.15),
+                        .withValues(alpha: 0.15),
                     blurRadius: 20,
                   ),
                 ],
@@ -543,7 +543,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
             'Her çalışma seansını kaydederek gelişiminizi görün.',
             style: TextStyle(
               fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 20),
@@ -653,7 +653,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
                       style: TextStyle(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.4),
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
@@ -679,7 +679,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppColors.info.withOpacity(0.1),
+                              color: AppColors.info.withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -706,7 +706,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
                                     fontSize: 13,
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.onSurface.withOpacity(0.5),
+                                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                                   ),
                                 ),
                               ],
@@ -721,7 +721,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
                                   fontSize: 11,
                                   color: Theme.of(
                                     context,
-                                  ).colorScheme.onSurface.withOpacity(0.4),
+                                  ).colorScheme.onSurface.withValues(alpha: 0.4),
                                 ),
                               ),
                               const SizedBox(height: 6),

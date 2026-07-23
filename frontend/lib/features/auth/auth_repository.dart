@@ -30,4 +30,16 @@ class AuthRepository {
   Future<String?> getToken() async {
     return await _storage.read(key: _tokenKey);
   }
+
+  Future<bool> verifyToken() async {
+    try {
+      final token = await getToken();
+      if (token == null) return false;
+      
+      final response = await apiClient.dio.get('/auth/verify');
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
 }

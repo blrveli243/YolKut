@@ -115,7 +115,7 @@ class _WishlistSheetState extends ConsumerState<WishlistSheet> {
                       style: TextStyle(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.5),
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   );
@@ -177,7 +177,7 @@ class _WishlistSheetState extends ConsumerState<WishlistSheet> {
                                   color: isPurchased
                                       ? AppColors.primary
                                       : Theme.of(context).colorScheme.onSurface
-                                            .withOpacity(0.3),
+                                            .withValues(alpha: 0.3),
                                   width: 2,
                                 ),
                               ),
@@ -196,7 +196,7 @@ class _WishlistSheetState extends ConsumerState<WishlistSheet> {
                               color: isPurchased
                                   ? Theme.of(
                                       context,
-                                    ).colorScheme.onSurface.withOpacity(0.5)
+                                    ).colorScheme.onSurface.withValues(alpha: 0.5)
                                   : Theme.of(context).colorScheme.onSurface,
                               decoration: isPurchased
                                   ? TextDecoration.lineThrough
@@ -227,7 +227,7 @@ class _WishlistSheetState extends ConsumerState<WishlistSheet> {
                                         color: Theme.of(context)
                                             .colorScheme
                                             .onSurface
-                                            .withOpacity(0.5),
+                                            .withValues(alpha: 0.5),
                                       ),
                                   ],
                                 )
@@ -265,7 +265,7 @@ class _WishlistSheetState extends ConsumerState<WishlistSheet> {
             decoration: InputDecoration(
               hintText: 'Ne almak istiyorsunuz?',
               hintStyle: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
               border: InputBorder.none,
               icon: const Icon(Icons.shopping_bag_outlined, color: Colors.grey),
@@ -286,7 +286,7 @@ class _WishlistSheetState extends ConsumerState<WishlistSheet> {
                     hintStyle: TextStyle(
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.5),
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     border: InputBorder.none,
                     icon: const Icon(Icons.attach_money, color: Colors.grey),
@@ -304,7 +304,7 @@ class _WishlistSheetState extends ConsumerState<WishlistSheet> {
                     hintStyle: TextStyle(
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.5),
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     border: InputBorder.none,
                     icon: const Icon(Icons.link, color: Colors.grey),

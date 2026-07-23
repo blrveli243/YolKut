@@ -132,7 +132,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               style: TextStyle(
                 color: message.isMine
                     ? Colors.white70
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 fontSize: 10,
               ),
             ),
@@ -170,7 +170,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     hintStyle: TextStyle(
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.5),
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     border: InputBorder.none,
                   ),

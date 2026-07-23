@@ -126,9 +126,9 @@ class CommunityScreen extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.darkCard,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.darkDivider, width: 1),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +152,7 @@ class CommunityScreen extends ConsumerWidget {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.darkDivider,
+                      color: Theme.of(context).dividerColor,
                       borderRadius: BorderRadius.circular(6), // Sharp avatar
                       image: DecorationImage(
                         image: AssetImage(post.authorAvatar),
@@ -179,7 +179,7 @@ class CommunityScreen extends ConsumerWidget {
                         Text(
                           post.authorName,
                           style: TextStyle(
-                            color: AppColors.darkText,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
                             letterSpacing: -0.3,
@@ -188,7 +188,7 @@ class CommunityScreen extends ConsumerWidget {
                         Text(
                           post.timeAgo,
                           style: TextStyle(
-                            color: AppColors.darkText.withOpacity(0.5),
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                             fontSize: 12,
                           ),
                         ),
@@ -199,7 +199,7 @@ class CommunityScreen extends ConsumerWidget {
                 IconButton(
                   icon: Icon(
                     Icons.more_horiz,
-                    color: AppColors.darkText.withValues(alpha: 0.5),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   onPressed: () => _showOptionsBottomSheet(context, ref, post),
                 ),
@@ -217,7 +217,7 @@ class CommunityScreen extends ConsumerWidget {
               child: Text(
                 post.content,
                 style: TextStyle(
-                  color: AppColors.darkText.withOpacity(0.9),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.9),
                   fontSize: 14,
                   height: 1.4,
                 ),
@@ -249,7 +249,7 @@ class CommunityScreen extends ConsumerWidget {
                             : Icons.local_fire_department_outlined,
                         color: post.isLikedByMe
                             ? AppColors.primary
-                            : AppColors.darkText.withOpacity(0.5),
+                            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         size: 24,
                       ),
                       const SizedBox(width: 6),
@@ -258,7 +258,7 @@ class CommunityScreen extends ConsumerWidget {
                         style: TextStyle(
                           color: post.isLikedByMe
                               ? AppColors.primary
-                              : AppColors.darkText.withOpacity(0.7),
+                              : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
                         ),
@@ -274,14 +274,14 @@ class CommunityScreen extends ConsumerWidget {
                     children: [
                       Icon(
                         Icons.chat_bubble_outline,
-                        color: AppColors.darkText.withValues(alpha: 0.5),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                         size: 22,
                       ),
                       const SizedBox(width: 6),
                       Text(
                         '${post.initialComments}',
                         style: TextStyle(
-                          color: AppColors.darkText.withValues(alpha: 0.7),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
@@ -298,7 +298,7 @@ class CommunityScreen extends ConsumerWidget {
                   },
                   child: Icon(
                     Icons.share_outlined,
-                    color: AppColors.darkText.withValues(alpha: 0.5),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     size: 22,
                   ),
                 ),
@@ -315,9 +315,9 @@ class CommunityScreen extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.darkCard,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.darkDivider, width: 1),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
       ),
       child: Shimmer.fromColors(
         baseColor: Colors.grey.withValues(alpha: 0.2),

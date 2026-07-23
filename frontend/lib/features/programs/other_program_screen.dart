@@ -180,7 +180,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? _programColor.withOpacity(0.2)
+                                  ? _programColor.withValues(alpha: 0.2)
                                   : Colors.transparent,
                               border: Border.all(
                                 color: isSelected
@@ -226,7 +226,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
                               boxShadow: isSelected
                                   ? [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.3),
+                                        color: Colors.black.withValues(alpha: 0.3),
                                         blurRadius: 4,
                                       ),
                                     ]
@@ -327,14 +327,14 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [_programColor, _programColor.withOpacity(0.8)],
+                  colors: [_programColor, _programColor.withValues(alpha: 0.8)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: _programColor.withOpacity(0.3),
+                    color: _programColor.withValues(alpha: 0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -367,7 +367,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
                         Text(
                           'Kişisel hedeflerinize ve ilgi alanlarınıza özel esnek takip programı.',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 12,
                           ),
                         ),
@@ -385,7 +385,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
             labelColor: _programColor,
             unselectedLabelColor: Theme.of(
               context,
-            ).colorScheme.onSurface.withOpacity(0.5),
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
             indicatorColor: _programColor,
             indicatorWeight: 3,
             labelStyle: const TextStyle(
@@ -462,7 +462,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
                     style: TextStyle(
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.4),
+                      ).colorScheme.onSurface.withValues(alpha: 0.4),
                     ),
                   ),
                 )
@@ -499,7 +499,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
                             color: (task['completed'] ?? false)
                                 ? Theme.of(
                                     context,
-                                  ).colorScheme.onSurface.withOpacity(0.5)
+                                  ).colorScheme.onSurface.withValues(alpha: 0.5)
                                 : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
@@ -537,7 +537,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
             'Çalışmalarınızı, başarılarınızı ve diğer notlarınızı süreyle kaydedin.',
             style: TextStyle(
               fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 20),
@@ -638,7 +638,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
                       style: TextStyle(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.4),
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
@@ -671,7 +671,7 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
                                   fontSize: 11,
                                   color: Theme.of(
                                     context,
-                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                                 ),
                               ),
                               GestureDetector(

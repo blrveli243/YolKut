@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'community_repository.dart';
@@ -187,7 +188,7 @@ class CommunityNotifier extends Notifier<CommunityState> {
           messages: [
             ChatMessage(
               text: c['lastMessage'],
-              isMine: false, // We just need it to show in inbox, we don't know who sent it exactly in this preview, but that's fine for MVP
+              isMine: c['isMine'] == true,
               time: _formatTimeAgo(DateTime.parse(c['time'])),
             )
           ],
@@ -244,7 +245,7 @@ class CommunityNotifier extends Notifier<CommunityState> {
         state = state.copyWith(posts: AsyncValue.data(newPosts));
       }
     } catch (e) {
-      // Hata durumu
+      debugPrint('Error in toggleLike: $e');
     }
   }
 
@@ -254,7 +255,7 @@ class CommunityNotifier extends Notifier<CommunityState> {
       await repo.createPost(content, imagePath);
       await _fetchInitialData(); // Yeniden yükle
     } catch (e) {
-      // Hata durumu
+      debugPrint('Error in addPost: $e');
     }
   }
 
@@ -264,7 +265,7 @@ class CommunityNotifier extends Notifier<CommunityState> {
       await repo.deletePost(int.parse(postId));
       await _fetchInitialData(); // Gönderileri yenile
     } catch (e) {
-      // Hata durumu
+      debugPrint('Error in deletePost: $e');
     }
   }
 
@@ -283,6 +284,7 @@ class CommunityNotifier extends Notifier<CommunityState> {
         );
       }).toList();
     } catch (e) {
+      debugPrint('Error in fetchComments: $e');
       return [];
     }
   }
@@ -293,7 +295,7 @@ class CommunityNotifier extends Notifier<CommunityState> {
       await repo.createComment(int.parse(postId), content);
       await _fetchInitialData(); // Yorum sayısını güncellemek için yenile
     } catch (e) {
-      // Hata durumu
+      debugPrint('Error in addComment: $e');
     }
   }
 
@@ -314,7 +316,7 @@ class CommunityNotifier extends Notifier<CommunityState> {
       newChats[userId] = ChatSession(userId: userId, messages: chatMessages);
       state = state.copyWith(chats: newChats);
     } catch (e) {
-      // Hata durumu
+      debugPrint('Error in fetchMessages: $e');
     }
   }
 
@@ -324,7 +326,7 @@ class CommunityNotifier extends Notifier<CommunityState> {
       await repo.sendMessage(int.parse(userId), text);
       await fetchMessages(userId);
     } catch (e) {
-      // Hata durumu
+      debugPrint('Error in addMessage: $e');
     }
   }
 
@@ -344,7 +346,7 @@ class CommunityNotifier extends Notifier<CommunityState> {
           newUsers[userId] = user.copyWith(friendStatus: newStatus);
           state = state.copyWith(users: AsyncValue.data(newUsers));
         } catch (e) {
-          // Hata durumu
+          debugPrint('Error in toggleFriendStatus: $e');
         }
       }
     }

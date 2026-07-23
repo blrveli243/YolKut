@@ -207,7 +207,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
             margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: DropdownButtonHideUnderline(
@@ -269,7 +269,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -287,7 +287,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                         child: CircularProgressIndicator(
                           value: completionRate,
                           strokeWidth: 8,
-                          backgroundColor: Colors.white.withOpacity(0.2),
+                          backgroundColor: Colors.white.withValues(alpha: 0.2),
                           valueColor: const AlwaysStoppedAnimation<Color>(
                             Colors.white,
                           ),
@@ -342,7 +342,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                               ? 'Harika! Bugünün tüm hedeflerini tamamladın!'
                               : 'Bugünü kurtarmak için çalışmaya başla!',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: 12,
                           ),
                         ),
@@ -361,7 +361,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
             labelColor: AppColors.primary,
             unselectedLabelColor: Theme.of(
               context,
-            ).colorScheme.onSurface.withOpacity(0.5),
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
             indicatorColor: AppColors.primary,
             indicatorWeight: 3,
             labelStyle: const TextStyle(
@@ -407,7 +407,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
           'Günde sadece 4 basit adımı tamamlayarak dil öğreniminizi hızlandırın. Aktif maruziyet ve pratik en iyi taktiklerdir.',
           style: TextStyle(
             fontSize: 14,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(height: 20),
@@ -490,7 +490,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
         secondary: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: color, size: 24),
@@ -539,7 +539,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                         size: 64,
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.2),
+                        ).colorScheme.onSurface.withValues(alpha: 0.2),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -547,7 +547,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                         style: TextStyle(
                           color: Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.5),
+                          ).colorScheme.onSurface.withValues(alpha: 0.5),
                           fontSize: 16,
                         ),
                       ),
@@ -557,7 +557,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                         style: TextStyle(
                           color: Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.4),
+                          ).colorScheme.onSurface.withValues(alpha: 0.4),
                           fontSize: 12,
                         ),
                       ),
@@ -579,7 +579,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                       front: _buildCardHalf(
                         title: item['word'] ?? '',
                         subtitle: 'Dokun ve Çevir',
-                        color: AppColors.primary.withOpacity(0.05),
+                        color: AppColors.primary.withValues(alpha: 0.05),
                         isFront: true,
                         item: item,
                         index: index,
@@ -587,7 +587,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                       back: _buildCardHalf(
                         title: item['meaning'] ?? '',
                         subtitle: item['sentence'] ?? 'Örnek cümle girilmedi.',
-                        color: const Color(0xFF047857).withOpacity(0.1),
+                        color: const Color(0xFF047857).withValues(alpha: 0.1),
                         isFront: false,
                         item: item,
                         index: index,
@@ -615,12 +615,12 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isFront
-              ? AppColors.primary.withOpacity(0.3)
+              ? AppColors.primary.withValues(alpha: 0.3)
               : AppColors.primary,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -642,7 +642,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                       (item['status'] == 'mastered'
                               ? Colors.blue
                               : Colors.orange)
-                          .withOpacity(0.15),
+                          .withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -695,7 +695,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
             style: TextStyle(
               fontSize: 12,
               fontStyle: isFront ? FontStyle.italic : FontStyle.normal,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
           const Spacer(),
@@ -838,7 +838,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
             'Bugün hedef dilde ne okudun veya ne dinledin? Bunu kaydetmek beynin dile alışmasını izlemenin en iyi yoludur.',
             style: TextStyle(
               fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 20),
@@ -941,7 +941,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                       style: TextStyle(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.4),
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
@@ -974,7 +974,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                                   fontSize: 12,
                                   color: Theme.of(
                                     context,
-                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                                 ),
                               ),
                               GestureDetector(
@@ -1056,7 +1056,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
             'Öğrendiğin kelimeleri aktif olarak kullanmak kalıcılığı artırır. Yeni kelimelerle kendi cümlelerini kur ve kaydet.',
             style: TextStyle(
               fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),
           const SizedBox(height: 20),
@@ -1133,7 +1133,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                       style: TextStyle(
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.4),
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
@@ -1166,7 +1166,7 @@ class _LanguageProgramScreenState extends State<LanguageProgramScreen>
                                   fontSize: 12,
                                   color: Theme.of(
                                     context,
-                                  ).colorScheme.onSurface.withOpacity(0.5),
+                                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                                 ),
                               ),
                               GestureDetector(
