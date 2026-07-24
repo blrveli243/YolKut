@@ -12,7 +12,9 @@ import SwiftUI
 // This structure MUST be exactly named LiveActivitiesAppAttributes for the live_activities plugin
 struct LiveActivitiesAppAttributes: ActivityAttributes, Identifiable {
     public typealias LiveDeliveryData = ContentState
-    public struct ContentState: Codable, Hashable { }
+    public struct ContentState: Codable, Hashable {
+        var endTime: Int?
+    }
     var id = UUID()
 }
 
@@ -33,6 +35,8 @@ struct YolKutTaskLiveActivity: Widget {
             let timeValue = sharedDefault.string(forKey: context.attributes.prefixedKey("timeValue")) ?? ""
             let iconName = sharedDefault.string(forKey: context.attributes.prefixedKey("iconName")) ?? "sun.max.fill"
             let taskType = sharedDefault.string(forKey: context.attributes.prefixedKey("taskType")) ?? "sunbathing"
+            let isRunning = sharedDefault.bool(forKey: context.attributes.prefixedKey("isRunning"))
+            let endTime = sharedDefault.integer(forKey: context.attributes.prefixedKey("endTime"))
             
             // Lock screen/banner UI
             VStack(alignment: .center) {
@@ -45,10 +49,17 @@ struct YolKutTaskLiveActivity: Widget {
                 }
                 .padding(.top, 12)
                 
-                Text(timeValue)
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
-                    .foregroundColor(getColor(for: taskType))
-                    .padding(.bottom, 12)
+                if isRunning && endTime > 0 {
+                    Text(timerInterval: Date()...Date(timeIntervalSince1970: TimeInterval(endTime) / 1000.0), countsDown: true)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundColor(getColor(for: taskType))
+                        .padding(.bottom, 12)
+                } else {
+                    Text(timeValue)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .foregroundColor(getColor(for: taskType))
+                        .padding(.bottom, 12)
+                }
                 
                 Text(subtitle)
                     .font(.caption)
@@ -64,6 +75,8 @@ struct YolKutTaskLiveActivity: Widget {
             let timeValue = sharedDefault.string(forKey: context.attributes.prefixedKey("timeValue")) ?? ""
             let iconName = sharedDefault.string(forKey: context.attributes.prefixedKey("iconName")) ?? "sun.max.fill"
             let taskType = sharedDefault.string(forKey: context.attributes.prefixedKey("taskType")) ?? "sunbathing"
+            let isRunning = sharedDefault.bool(forKey: context.attributes.prefixedKey("isRunning"))
+            let endTime = sharedDefault.integer(forKey: context.attributes.prefixedKey("endTime"))
             
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
@@ -73,11 +86,20 @@ struct YolKutTaskLiveActivity: Widget {
                         .padding(.leading, 8)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text(timeValue)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(getColor(for: taskType))
-                        .padding(.trailing, 8)
+                    if isRunning && endTime > 0 {
+                        Text(timerInterval: Date()...Date(timeIntervalSince1970: TimeInterval(endTime) / 1000.0), countsDown: true)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(getColor(for: taskType))
+                            .padding(.trailing, 8)
+                            .multilineTextAlignment(.trailing)
+                    } else {
+                        Text(timeValue)
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(getColor(for: taskType))
+                            .padding(.trailing, 8)
+                    }
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     Text(subtitle)
@@ -88,8 +110,14 @@ struct YolKutTaskLiveActivity: Widget {
                 Image(systemName: iconName)
                     .foregroundColor(getColor(for: taskType))
             } compactTrailing: {
-                Text(timeValue)
-                    .foregroundColor(getColor(for: taskType))
+                if isRunning && endTime > 0 {
+                    Text(timerInterval: Date()...Date(timeIntervalSince1970: TimeInterval(endTime) / 1000.0), countsDown: true)
+                        .foregroundColor(getColor(for: taskType))
+                        .frame(maxWidth: 40)
+                } else {
+                    Text(timeValue)
+                        .foregroundColor(getColor(for: taskType))
+                }
             } minimal: {
                 Image(systemName: iconName)
                     .foregroundColor(getColor(for: taskType))

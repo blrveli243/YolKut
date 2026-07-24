@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter/foundation.dart';
+import 'live_activity_service.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) async {
@@ -23,6 +24,25 @@ void notificationTapBackground(NotificationResponse notificationResponse) async 
           await prefs.setInt('sunbathing_paused_remaining', remaining > 0 ? remaining : 0);
           await prefs.setBool('sunbathing_is_running', false);
           await prefs.remove('sunbathing_start_time');
+          
+          await LiveActivityService().updateActivity(
+            title: 'Güneşlenme',
+            subtitle: 'Duraklatıldı',
+            timeValue: '${(remaining ~/ 60).toString().padLeft(2, '0')}:${(remaining % 60).toString().padLeft(2, '0')}',
+            iconName: 'pause.fill',
+            taskType: 'sunbathing',
+            isRunning: false,
+            endTime: 0,
+          );
+          
+          await NotificationService().showOngoingNotification(
+            id: 9998,
+            title: '⏸️ Güneşlenme Duraklatıldı',
+            body: 'Arka Yüz / Ön Yüz',
+            durationSeconds: remaining,
+            taskType: 'sunbathing',
+            isPaused: true,
+          );
         }
       } else if (payload == 'study') {
         final startTimeMs = prefs.getInt('study_start_time') ?? 0;
@@ -56,6 +76,25 @@ void notificationTapBackground(NotificationResponse notificationResponse) async 
         await prefs.setInt('sunbathing_start_time', DateTime.now().millisecondsSinceEpoch);
         await prefs.setBool('sunbathing_is_running', true);
         await prefs.remove('sunbathing_paused_remaining');
+
+        await LiveActivityService().updateActivity(
+          title: 'Güneşlenme',
+          subtitle: 'Hedefinize doğru ilerliyorsunuz',
+          timeValue: '${(pausedRemaining ~/ 60).toString().padLeft(2, '0')}:${(pausedRemaining % 60).toString().padLeft(2, '0')}',
+          iconName: 'sun.max.fill',
+          taskType: 'sunbathing',
+          isRunning: true,
+          endTime: DateTime.now().millisecondsSinceEpoch + (pausedRemaining * 1000),
+        );
+        
+        await NotificationService().showOngoingNotification(
+          id: 9998,
+          title: '☀️ Güneşlenme Modu Aktif',
+          body: 'Ön Yüz / Arka Yüz',
+          durationSeconds: pausedRemaining,
+          taskType: 'sunbathing',
+          isPaused: false,
+        );
       } else if (payload == 'study') {
         await prefs.setInt('study_start_time', DateTime.now().millisecondsSinceEpoch);
         await prefs.setBool('study_is_running', true);
@@ -70,6 +109,10 @@ void notificationTapBackground(NotificationResponse notificationResponse) async 
         await prefs.setBool('sunbathing_is_running', false);
         await prefs.remove('sunbathing_start_time');
         await prefs.remove('sunbathing_paused_remaining');
+        
+        await LiveActivityService().stopActivity();
+        await NotificationService().cancelOngoingNotification(9998);
+        await NotificationService().cancelSunbathingAlarm();
       } else if (payload == 'study') {
         await prefs.setBool('study_is_running', false);
         await prefs.remove('study_start_time');

@@ -225,6 +225,7 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
       iconName: 'sun.max.fill',
       taskType: 'sunbathing',
       isRunning: state.isRunning,
+      endTime: DateTime.now().millisecondsSinceEpoch + (state.remainingSeconds * 1000),
     );
   }
 
@@ -245,6 +246,7 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
           iconName: 'sun.max.fill',
           taskType: 'sunbathing',
           isRunning: true,
+          endTime: DateTime.now().millisecondsSinceEpoch + (state.remainingSeconds * 1000),
         );
       } catch (e) {
         // ignore

@@ -21,6 +21,7 @@ class LiveActivityService {
     required String iconName,
     required String taskType,
     required bool isRunning,
+    int? endTime,
   }) async {
     if (_currentActivityId != null) {
       await stopActivity();
@@ -35,6 +36,7 @@ class LiveActivityService {
         'iconName': iconName,
         'isRunning': isRunning,
         'taskType': taskType,
+        'endTime': endTime ?? 0,
       },
     );
   }
@@ -46,6 +48,7 @@ class LiveActivityService {
     required String iconName,
     required String taskType,
     required bool isRunning,
+    int? endTime,
   }) async {
     if (_currentActivityId != null) {
       await _liveActivitiesPlugin.updateActivity(
@@ -57,6 +60,7 @@ class LiveActivityService {
           'iconName': iconName,
           'isRunning': isRunning,
           'taskType': taskType,
+          'endTime': endTime ?? 0,
         },
       );
     }
