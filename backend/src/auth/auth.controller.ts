@@ -29,7 +29,17 @@ export class AuthController {
 
   @Get('wipe-db')
   async wipeDb() {
-    await this.prisma.user.deleteMany({});
-    return { success: true, message: 'All users wiped!' };
+    try {
+      const tablenames = await this.prisma.$queryRaw<Array<{ tablename: string }>>`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+      for (const { tablename } of tablenames) {
+        if (tablename !== '_prisma_migrations') {
+          await this.prisma.$executeRawUnsafe(`TRUNCATE TABLE "${tablename}" CASCADE;`);
+        }
+      }
+      return { success: true, message: 'All users and data wiped via cascade truncate!' };
+    } catch (e) {
+      console.error(e);
+      return { success: false, message: 'Wipe failed: ' + e.message };
+    }
   }
 }
