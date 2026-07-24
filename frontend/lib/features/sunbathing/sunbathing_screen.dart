@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -130,35 +131,43 @@ class SunbathingScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Wrap(
-          spacing: 12,
-          runSpacing: 12,
-          alignment: WrapAlignment.center,
-          children: [5, 10, 15, 20, 30].map((mins) {
-            final isSelected = state.totalDurationSeconds == (mins * 60);
-            return GestureDetector(
-              onTap: () => notifier.setDuration(mins),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.warning : Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: isSelected ? AppColors.warning : Theme.of(context).dividerColor,
-                    width: 1,
-                  ),
+        SizedBox(
+          height: 140,
+          child: CupertinoPicker(
+            scrollController: FixedExtentScrollController(
+              initialItem: (state.totalDurationSeconds ~/ 60) - 1,
+            ),
+            itemExtent: 48,
+            magnification: 1.2,
+            squeeze: 1.1,
+            useMagnifier: true,
+            selectionOverlay: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: AppColors.warning.withValues(alpha: 0.15),
+                border: Border.symmetric(
+                  horizontal: BorderSide(color: AppColors.warning.withValues(alpha: 0.5), width: 1.5),
                 ),
+              ),
+            ),
+            onSelectedItemChanged: (int index) {
+              notifier.setDuration(index + 1);
+            },
+            children: List<Widget>.generate(120, (int index) {
+              final mins = index + 1;
+              final isSelected = state.totalDurationSeconds == (mins * 60);
+              return Center(
                 child: Text(
                   '$mins dk',
                   style: TextStyle(
-                    color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    fontSize: 16,
+                    fontSize: isSelected ? 24 : 20,
+                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
+                    color: isSelected ? AppColors.warning : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }),
+          ),
         ),
       ],
     );
