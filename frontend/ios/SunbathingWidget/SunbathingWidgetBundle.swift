@@ -11,6 +11,6 @@ import SwiftUI
 @main
 struct SunbathingWidgetBundle: WidgetBundle {
     var body: some Widget {
-        SunbathingWidgetLiveActivity()
+        YolKutTaskLiveActivity()
     }
 }

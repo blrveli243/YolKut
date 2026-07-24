@@ -9,74 +9,102 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-struct SunbathingWidgetAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        var remainingSeconds: Int
-    }
-    var totalDurationSeconds: Int
-    var isFrontSide: Bool
+// This structure MUST be exactly named LiveActivitiesAppAttributes for the live_activities plugin
+struct LiveActivitiesAppAttributes: ActivityAttributes, Identifiable {
+    public typealias LiveDeliveryData = ContentState
+    public struct ContentState: Codable, Hashable { }
+    var id = UUID()
 }
 
-struct SunbathingWidgetLiveActivity: Widget {
+extension LiveActivitiesAppAttributes {
+    func prefixedKey(_ key: String) -> String {
+        return "\(id)_\(key)"
+    }
+}
+
+let sharedDefault = UserDefaults(suiteName: "group.com.velibilir.yolkut")!
+
+@available(iOSApplicationExtension 16.1, *)
+struct YolKutTaskLiveActivity: Widget {
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: SunbathingWidgetAttributes.self) { context in
-            // Lock screen/banner UI goes here
+        ActivityConfiguration(for: LiveActivitiesAppAttributes.self) { context in
+            let title = sharedDefault.string(forKey: context.attributes.prefixedKey("title")) ?? ""
+            let subtitle = sharedDefault.string(forKey: context.attributes.prefixedKey("subtitle")) ?? ""
+            let timeValue = sharedDefault.string(forKey: context.attributes.prefixedKey("timeValue")) ?? ""
+            let iconName = sharedDefault.string(forKey: context.attributes.prefixedKey("iconName")) ?? "sun.max.fill"
+            let taskType = sharedDefault.string(forKey: context.attributes.prefixedKey("taskType")) ?? "sunbathing"
+            
+            // Lock screen/banner UI
             VStack(alignment: .center) {
                 HStack {
-                    Image(systemName: "sun.max.fill")
-                        .foregroundColor(.orange)
-                    Text(context.attributes.isFrontSide ? "Ön Yüz (Göğüs/Karın)" : "Arka Yüz (Sırt/Bacak)")
+                    Image(systemName: iconName)
+                        .foregroundColor(getColor(for: taskType))
+                    Text(title)
                         .font(.headline)
                         .foregroundColor(.white)
                 }
                 .padding(.top, 12)
                 
-                Text(timeString(from: context.state.remainingSeconds))
+                Text(timeValue)
                     .font(.system(size: 36, weight: .bold, design: .rounded))
-                    .foregroundColor(.orange)
+                    .foregroundColor(getColor(for: taskType))
                     .padding(.bottom, 12)
+                
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundColor(.gray)
+                    .padding(.bottom, 8)
             }
             .activityBackgroundTint(Color.black.opacity(0.8))
             .activitySystemActionForegroundColor(Color.white)
             
         } dynamicIsland: { context in
-            DynamicIsland {
+            let title = sharedDefault.string(forKey: context.attributes.prefixedKey("title")) ?? ""
+            let subtitle = sharedDefault.string(forKey: context.attributes.prefixedKey("subtitle")) ?? ""
+            let timeValue = sharedDefault.string(forKey: context.attributes.prefixedKey("timeValue")) ?? ""
+            let iconName = sharedDefault.string(forKey: context.attributes.prefixedKey("iconName")) ?? "sun.max.fill"
+            let taskType = sharedDefault.string(forKey: context.attributes.prefixedKey("taskType")) ?? "sunbathing"
+            
+            return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    Image(systemName: "sun.max.fill")
-                        .foregroundColor(.orange)
+                    Image(systemName: iconName)
+                        .foregroundColor(getColor(for: taskType))
                         .font(.title2)
                         .padding(.leading, 8)
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    Text(timeString(from: context.state.remainingSeconds))
+                    Text(timeValue)
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.orange)
+                        .foregroundColor(getColor(for: taskType))
                         .padding(.trailing, 8)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text(context.attributes.isFrontSide ? "Güneşlenme: Ön Yüz" : "Güneşlenme: Arka Yüz")
+                    Text(subtitle)
                         .font(.caption)
                         .foregroundColor(.gray)
                 }
             } compactLeading: {
-                Image(systemName: "sun.max.fill")
-                    .foregroundColor(.orange)
+                Image(systemName: iconName)
+                    .foregroundColor(getColor(for: taskType))
             } compactTrailing: {
-                Text(timeString(from: context.state.remainingSeconds))
-                    .foregroundColor(.orange)
+                Text(timeValue)
+                    .foregroundColor(getColor(for: taskType))
             } minimal: {
-                Image(systemName: "sun.max.fill")
-                    .foregroundColor(.orange)
+                Image(systemName: iconName)
+                    .foregroundColor(getColor(for: taskType))
             }
-            .keylineTint(Color.orange)
+            .keylineTint(getColor(for: taskType))
         }
     }
     
-    func timeString(from totalSeconds: Int) -> String {
-        let minutes = totalSeconds / 60
-        let seconds = totalSeconds % 60
-        return String(format: "%02d:%02d", minutes, seconds)
+    func getColor(for taskType: String) -> Color {
+        switch taskType {
+        case "study": return Color.blue
+        case "sunbathing": return Color.orange
+        case "workout": return Color.green
+        case "pacer": return Color.purple
+        default: return Color.orange
+        }
     }
 }
-

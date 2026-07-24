@@ -6,10 +6,12 @@ import 'main_screen.dart';
 import 'core/theme/app_theme_provider.dart';
 
 import 'core/services/notification_service.dart';
+import 'core/services/live_activity_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().init();
+  await LiveActivityService().init();
   runApp(const ProviderScope(child: HealthApp()));
 }
 

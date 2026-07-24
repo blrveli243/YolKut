@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import '../../core/services/notification_service.dart';
+import '../../core/services/live_activity_service.dart';
 
 class StudyTimerState {
   final int secondsRemaining;
@@ -36,6 +37,7 @@ class StudyTimerState {
 class StudyTimerNotifier extends Notifier<StudyTimerState> {
   Timer? _timer;
   final NotificationService _notificationService = NotificationService();
+  final LiveActivityService _liveActivityService = LiveActivityService();
 
   static const _keyStartTime = 'study_start_time';
   static const _keyIsRunning = 'study_is_running';
@@ -171,7 +173,22 @@ class StudyTimerNotifier extends Notifier<StudyTimerState> {
       isPaused: false,
     );
 
+    _liveActivityService.startActivity(
+      title: state.isBreak ? 'Mola Zamanı' : 'Odaklanma Zamanı',
+      subtitle: 'Hedefinize ulaşıyorsunuz',
+      timeValue: _formatTime(state.secondsRemaining),
+      iconName: state.isBreak ? 'cup.and.saucer.fill' : 'book.fill',
+      taskType: 'study',
+      isRunning: true,
+    );
+
     _startInternalTimer();
+  }
+
+  String _formatTime(int seconds) {
+    final m = seconds ~/ 60;
+    final s = seconds % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
   void pause() {
@@ -188,6 +205,15 @@ class StudyTimerNotifier extends Notifier<StudyTimerState> {
       taskType: 'study',
       isPaused: true,
     );
+    
+    _liveActivityService.updateActivity(
+      title: state.isBreak ? 'Mola Zamanı' : 'Odaklanma Zamanı',
+      subtitle: 'Duraklatıldı',
+      timeValue: _formatTime(state.secondsRemaining),
+      iconName: 'pause.fill',
+      taskType: 'study',
+      isRunning: false,
+    );
   }
 
   void resetTimer() {
@@ -200,8 +226,9 @@ class StudyTimerNotifier extends Notifier<StudyTimerState> {
       secondsRemaining: resetTime,
     );
     _clearPersistedState();
-    
     _persistPausedState();
+    
+    _liveActivityService.stopActivity();
   }
 
   void stop() {
@@ -213,6 +240,14 @@ class StudyTimerNotifier extends Notifier<StudyTimerState> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.secondsRemaining > 0) {
         state = state.copyWith(secondsRemaining: state.secondsRemaining - 1);
+        _liveActivityService.updateActivity(
+          title: state.isBreak ? 'Mola Zamanı' : 'Odaklanma Zamanı',
+          subtitle: 'Hedefinize ulaşıyorsunuz',
+          timeValue: _formatTime(state.secondsRemaining),
+          iconName: state.isBreak ? 'cup.and.saucer.fill' : 'book.fill',
+          taskType: 'study',
+          isRunning: true,
+        );
       } else {
         _timer?.cancel();
         _handleTimerCompletion();
@@ -222,6 +257,7 @@ class StudyTimerNotifier extends Notifier<StudyTimerState> {
 
   Future<void> _handleTimerCompletion() async {
     _notificationService.cancelOngoingNotification(9997);
+    _liveActivityService.stopActivity();
     
     if (!state.isBreak) {
       // Completed a Pomodoro

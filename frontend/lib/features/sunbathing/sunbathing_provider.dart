@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/services/notification_service.dart';
+import '../../core/services/live_activity_service.dart';
 
 class SunbathingState {
   final int totalDurationSeconds;
@@ -40,7 +41,7 @@ class SunbathingState {
 class SunbathingNotifier extends Notifier<SunbathingState> {
   Timer? _timer;
   final NotificationService _notificationService = NotificationService();
-  static const MethodChannel _liveActivityChannel = MethodChannel('com.velibilir.yolkut/live_activity');
+  final LiveActivityService _liveActivityService = LiveActivityService();
 
   // SharedPreferences keys
   static const _keyStartTime = 'sunbathing_start_time';
@@ -217,23 +218,34 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
   }
 
   void _startLiveActivity() {
-    try {
-      _liveActivityChannel.invokeMethod('start', {
-        'totalDurationSeconds': state.totalDurationSeconds,
-        'isFrontSide': state.isFrontSide,
-      });
-    } catch (e) {
-      debugPrint('Live Activity start error: $e');
-    }
+    _liveActivityService.startActivity(
+      title: state.isFrontSide ? 'Güneşlenme (Ön Yüz)' : 'Güneşlenme (Arka Yüz)',
+      subtitle: 'Hedefinize doğru ilerliyorsunuz',
+      timeValue: _formatTime(state.remainingSeconds),
+      iconName: 'sun.max.fill',
+      taskType: 'sunbathing',
+      isRunning: state.isRunning,
+    );
+  }
+
+  String _formatTime(int seconds) {
+    final m = seconds ~/ 60;
+    final s = seconds % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
   void _tick(Timer timer) {
     if (state.remainingSeconds > 0) {
       state = state.copyWith(remainingSeconds: state.remainingSeconds - 1);
       try {
-        _liveActivityChannel.invokeMethod('update', {
-          'remainingSeconds': state.remainingSeconds,
-        });
+        _liveActivityService.updateActivity(
+          title: state.isFrontSide ? 'Güneşlenme (Ön Yüz)' : 'Güneşlenme (Arka Yüz)',
+          subtitle: 'Hedefinize doğru ilerliyorsunuz',
+          timeValue: _formatTime(state.remainingSeconds),
+          iconName: 'sun.max.fill',
+          taskType: 'sunbathing',
+          isRunning: true,
+        );
       } catch (e) {
         // ignore
       }
@@ -259,9 +271,14 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
       isPaused: true,
     );
 
-    try {
-      _liveActivityChannel.invokeMethod('stop');
-    } catch (_) {}
+    _liveActivityService.updateActivity(
+      title: state.isFrontSide ? 'Güneşlenme (Ön Yüz)' : 'Güneşlenme (Arka Yüz)',
+      subtitle: 'Duraklatıldı',
+      timeValue: _formatTime(state.remainingSeconds),
+      iconName: 'pause.fill',
+      taskType: 'sunbathing',
+      isRunning: false,
+    );
   }
 
   void stop() {
@@ -274,9 +291,7 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
     );
     _clearPersistedState();
     
-    try {
-      _liveActivityChannel.invokeMethod('stop');
-    } catch (_) {}
+    _liveActivityService.stopActivity();
   }
   
   void resetSide() {
@@ -291,9 +306,7 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
     );
     _clearPersistedState();
     
-    try {
-      _liveActivityChannel.invokeMethod('stop');
-    } catch (_) {}
+    _liveActivityService.stopActivity();
   }
 
   void _onTimeUp() {
@@ -301,9 +314,7 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
     _notificationService.cancelOngoingNotification(9998);
     _clearPersistedState();
     
-    try {
-      _liveActivityChannel.invokeMethod('stop');
-    } catch (_) {}
+    _liveActivityService.stopActivity();
     
     if (state.isFrontSide) {
       state = state.copyWith(

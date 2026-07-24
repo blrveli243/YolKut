@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/services/notification_service.dart';
+import '../../core/services/live_activity_service.dart';
 import '../health/health_repository.dart';
 
 class WorkoutTimerState {
@@ -35,6 +36,7 @@ class WorkoutTimerState {
 class WorkoutTimerNotifier extends Notifier<WorkoutTimerState> {
   Timer? _timer;
   final NotificationService _notificationService = NotificationService();
+  final LiveActivityService _liveActivityService = LiveActivityService();
   final HealthRepository _healthRepo = HealthRepository();
 
   static const _keyStartTime = 'workout_start_time';
@@ -146,7 +148,22 @@ class WorkoutTimerNotifier extends Notifier<WorkoutTimerState> {
       isPaused: false,
     );
 
+    _liveActivityService.startActivity(
+      title: 'Antrenman',
+      subtitle: 'Hedefine ulaşıyorsun!',
+      timeValue: _formatTime(state.secondsElapsed),
+      iconName: 'figure.run',
+      taskType: 'workout',
+      isRunning: true,
+    );
+
     _startInternalTimer();
+  }
+
+  String _formatTime(int seconds) {
+    final m = seconds ~/ 60;
+    final s = seconds % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
   void pause() {
@@ -166,6 +183,15 @@ class WorkoutTimerNotifier extends Notifier<WorkoutTimerState> {
       taskType: 'workout',
       isPaused: true,
     );
+
+    _liveActivityService.updateActivity(
+      title: 'Antrenman',
+      subtitle: 'Duraklatıldı',
+      timeValue: _formatTime(state.secondsElapsed),
+      iconName: 'pause.fill',
+      taskType: 'workout',
+      isRunning: false,
+    );
   }
 
   void stop() {
@@ -179,6 +205,8 @@ class WorkoutTimerNotifier extends Notifier<WorkoutTimerState> {
       motivationMessage: "Hazırlan, harika bir antrenman seni bekliyor!",
     );
     _clearPersistedState();
+    
+    _liveActivityService.stopActivity();
   }
 
   void _startInternalTimer() {
@@ -209,6 +237,15 @@ class WorkoutTimerNotifier extends Notifier<WorkoutTimerState> {
       }
       
       state = state.copyWith(secondsElapsed: newElapsed);
+      
+      _liveActivityService.updateActivity(
+        title: 'Antrenman',
+        subtitle: state.motivationMessage,
+        timeValue: _formatTime(newElapsed),
+        iconName: 'figure.run',
+        taskType: 'workout',
+        isRunning: true,
+      );
     });
   }
 }
