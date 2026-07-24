@@ -50,6 +50,7 @@ dependencies:
   shimmer: ^3.0.0
   cached_network_image: ^3.4.1
   timeago: ^3.7.1
+  live_activities: ^2.4.7
 
 dev_dependencies:
   flutter_test:

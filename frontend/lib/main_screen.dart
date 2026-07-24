@@ -9,6 +9,7 @@ import 'features/profile/profile_screen.dart';
 import 'features/tasks/tasks_screen.dart';
 import 'features/community/community_screen.dart';
 import 'core/widgets/global_active_task_bar.dart';
+import 'features/sunbathing/sunbathing_provider.dart';
 
 class MainTabIndexNotifier extends Notifier<int> {
   @override
@@ -30,11 +31,27 @@ class MainScreen extends ConsumerStatefulWidget {
   ConsumerState<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends ConsumerState<MainScreen> {
+class _MainScreenState extends ConsumerState<MainScreen> with WidgetsBindingObserver {
   final PageController _pageController = PageController(initialPage: 0);
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // Sync sunbathing timer when app comes back to foreground
+      ref.read(sunbathingProvider.notifier).onAppResumed();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _pageController.dispose();
     super.dispose();
   }

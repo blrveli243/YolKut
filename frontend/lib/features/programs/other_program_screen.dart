@@ -79,7 +79,10 @@ class _OtherProgramScreenState extends State<OtherProgramScreen>
       _programTitle = prefs.getString('other_title') ?? 'Özel Programım';
       final iconCode = prefs.getInt('other_icon_code');
       if (iconCode != null) {
-        _programIcon = IconData(iconCode, fontFamily: 'MaterialIcons');
+        _programIcon = _availableIcons.firstWhere(
+          (icon) => icon.codePoint == iconCode,
+          orElse: () => Icons.star,
+        );
       }
       final colorVal = prefs.getInt('other_color_val');
       if (colorVal != null) {
