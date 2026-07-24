@@ -11,6 +11,7 @@ import 'water_provider.dart';
 import '../../main_screen.dart';
 import '../../core/utils/date_formatter.dart';
 import 'health_provider.dart';
+import '../sunbathing/sunbathing_screen.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -135,7 +136,7 @@ class DashboardScreen extends ConsumerWidget {
                         2,
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: _buildCTAButton(
                         context,
@@ -144,6 +145,16 @@ class DashboardScreen extends ConsumerWidget {
                         Icons.restaurant_menu,
                         AppColors.info,
                         1,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _buildRouteButton(
+                        context,
+                        'Güneşlenme',
+                        Icons.wb_sunny_rounded,
+                        AppColors.warning,
+                        const SunbathingScreen(),
                       ),
                     ),
                   ],
@@ -595,6 +606,49 @@ class DashboardScreen extends ConsumerWidget {
                 fontWeight: FontWeight.w500,
                 fontSize: 13,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRouteButton(
+    BuildContext context,
+    String text,
+    IconData icon,
+    Color color,
+    Widget destination,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => destination),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 8),
+            Text(
+              text,
+              style: TextStyle(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

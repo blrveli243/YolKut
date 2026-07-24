@@ -375,4 +375,47 @@ class NotificationService {
   Future<void> cancelReminder(int id) async {
     await _localNotificationsPlugin.cancel(id: id);
   }
+
+  // Sunbathing specific notifications
+  Future<void> scheduleSunbathingAlarm({
+    required int durationSeconds,
+    required String title,
+    required String body,
+  }) async {
+    final scheduledTime = DateTime.now().add(Duration(seconds: durationSeconds));
+
+    final androidDetails = const AndroidNotificationDetails(
+      'sunbathing_alarm',
+      'Güneşlenme Alarmları',
+      channelDescription: 'Güneşlenme süresi dolduğunda çalan alarmlar',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+    );
+
+    final iosDetails = const DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _localNotificationsPlugin.zonedSchedule(
+      id: 9999, // Unique ID for sunbathing
+      title: title,
+      body: body,
+      scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
+      notificationDetails: details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
+  }
+
+  Future<void> cancelSunbathingAlarm() async {
+    await _localNotificationsPlugin.cancel(id: 9999);
+  }
 }
