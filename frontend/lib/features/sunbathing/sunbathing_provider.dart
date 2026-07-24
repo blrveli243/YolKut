@@ -81,6 +81,13 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
       body: body,
     );
 
+    _notificationService.showOngoingNotification(
+      id: 9998,
+      title: '☀️ Güneşlenme Modu Aktif',
+      body: state.isFrontSide ? 'Ön Yüz (Göğüs/Karın)' : 'Arka Yüz (Sırt/Bacak)',
+      durationSeconds: state.remainingSeconds,
+    );
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (state.remainingSeconds > 0) {
         state = state.copyWith(remainingSeconds: state.remainingSeconds - 1);
@@ -94,12 +101,14 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
     if (!state.isRunning) return;
     _timer?.cancel();
     _notificationService.cancelSunbathingAlarm();
+    _notificationService.cancelOngoingNotification(9998);
     state = state.copyWith(isRunning: false);
   }
 
   void stop() {
     _timer?.cancel();
     _notificationService.cancelSunbathingAlarm();
+    _notificationService.cancelOngoingNotification(9998);
     state = state.copyWith(
       isRunning: false,
       remainingSeconds: state.totalDurationSeconds,
@@ -109,6 +118,7 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
   void resetSide() {
     _timer?.cancel();
     _notificationService.cancelSunbathingAlarm();
+    _notificationService.cancelOngoingNotification(9998);
     state = state.copyWith(
       isRunning: false,
       isFinished: false,
@@ -118,6 +128,7 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
 
   void _onTimeUp() {
     _timer?.cancel();
+    _notificationService.cancelOngoingNotification(9998);
     
     if (state.isFrontSide) {
       // First side done, switch to back

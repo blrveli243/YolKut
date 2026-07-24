@@ -8,6 +8,7 @@ import 'features/sports/sports_screen.dart';
 import 'features/profile/profile_screen.dart';
 import 'features/tasks/tasks_screen.dart';
 import 'features/community/community_screen.dart';
+import 'core/widgets/global_active_task_bar.dart';
 
 class MainTabIndexNotifier extends Notifier<int> {
   @override
@@ -73,49 +74,55 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                   ),
                 ),
               ),
-              child: ClipRRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: BottomNavigationBar(
-                    currentIndex: currentIndex,
-                    onTap: (index) {
-                      ref.read(mainTabIndexProvider.notifier).setIndex(index);
-                    },
-                    backgroundColor: Colors.transparent,
-                    type: BottomNavigationBarType.fixed,
-                    elevation: 0,
-                    selectedItemColor: Theme.of(
-                      context,
-                    ).bottomNavigationBarTheme.selectedItemColor,
-                    unselectedItemColor: Theme.of(
-                      context,
-                    ).bottomNavigationBarTheme.unselectedItemColor,
-                    selectedFontSize: 12,
-                    unselectedFontSize: 12,
-                    items: const [
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.dashboard_rounded),
-                        label: 'Özet',
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const GlobalActiveTaskBar(),
+                  ClipRRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: BottomNavigationBar(
+                        currentIndex: currentIndex,
+                        onTap: (index) {
+                          ref.read(mainTabIndexProvider.notifier).setIndex(index);
+                        },
+                        backgroundColor: Colors.transparent,
+                        type: BottomNavigationBarType.fixed,
+                        elevation: 0,
+                        selectedItemColor: Theme.of(
+                          context,
+                        ).bottomNavigationBarTheme.selectedItemColor,
+                        unselectedItemColor: Theme.of(
+                          context,
+                        ).bottomNavigationBarTheme.unselectedItemColor,
+                        selectedFontSize: 12,
+                        unselectedFontSize: 12,
+                        items: const [
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.dashboard_rounded),
+                            label: 'Özet',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.local_fire_department_rounded),
+                            label: 'Beslenme',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.fitness_center_rounded),
+                            label: 'Antrenman',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.check_circle_outline_rounded),
+                            label: 'Görevler',
+                          ),
+                          BottomNavigationBarItem(
+                            icon: Icon(Icons.person_rounded),
+                            label: 'Profil',
+                          ),
+                        ],
                       ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.local_fire_department_rounded),
-                        label: 'Beslenme',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.fitness_center_rounded),
-                        label: 'Antrenman',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.check_circle_outline_rounded),
-                        label: 'Görevler',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.person_rounded),
-                        label: 'Profil',
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),

@@ -418,4 +418,50 @@ class NotificationService {
   Future<void> cancelSunbathingAlarm() async {
     await _localNotificationsPlugin.cancel(id: 9999);
   }
+
+  // Ongoing / Persistent Notification
+  Future<void> showOngoingNotification({
+    required int id,
+    required String title,
+    required String body,
+    required int durationSeconds,
+  }) async {
+    final androidDetails = AndroidNotificationDetails(
+      'ongoing_tasks_channel',
+      'Aktif İşlemler',
+      channelDescription: 'Devam eden işlemlerin gösterildiği bildirimler',
+      importance: Importance.low,
+      priority: Priority.low,
+      ongoing: true,
+      autoCancel: false,
+      showWhen: true,
+      usesChronometer: true,
+      chronometerCountDown: true,
+      when: DateTime.now().millisecondsSinceEpoch + (durationSeconds * 1000),
+      playSound: false,
+      enableVibration: false,
+    );
+
+    final iosDetails = const DarwinNotificationDetails(
+      presentAlert: false,
+      presentBadge: false,
+      presentSound: false,
+    );
+
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _localNotificationsPlugin.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
+    );
+  }
+
+  Future<void> cancelOngoingNotification(int id) async {
+    await _localNotificationsPlugin.cancel(id: id);
+  }
 }
