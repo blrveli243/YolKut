@@ -362,6 +362,6 @@ class PacerNotifier extends Notifier<PacerState> {
   }
 }
 
-final pacerProvider = NotifierProvider.autoDispose<PacerNotifier, PacerState>(() {
+final pacerProvider = NotifierProvider<PacerNotifier, PacerState>(() {
   return PacerNotifier();
 });
