@@ -187,6 +187,12 @@ class NotificationService {
 
     await _localNotificationsPlugin.initialize(settings: initSettings);
 
+    // Request permissions for Android 13+
+    final androidImplementation = _localNotificationsPlugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+    await androidImplementation?.requestNotificationsPermission();
+    await androidImplementation?.requestExactAlarmsPermission();
+
     // Schedule the 28 rotating weekly notifications (quotes + spaced repetition)
     await scheduleDailyReminders();
   }
