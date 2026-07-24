@@ -3,6 +3,92 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter/foundation.dart';
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) async {
+  if (notificationResponse.actionId != null) {
+    final action = notificationResponse.actionId!;
+    final payload = notificationResponse.payload ?? '';
+    final prefs = await SharedPreferences.getInstance();
+
+    if (action == 'pause_task') {
+      if (payload == 'sunbathing') {
+        final startTimeMs = prefs.getInt('sunbathing_start_time') ?? 0;
+        final totalDuration = prefs.getInt('sunbathing_total_duration') ?? 15 * 60;
+        if (startTimeMs > 0) {
+          final startTime = DateTime.fromMillisecondsSinceEpoch(startTimeMs);
+          final elapsed = DateTime.now().difference(startTime).inSeconds;
+          final remaining = totalDuration - elapsed;
+          await prefs.setInt('sunbathing_paused_remaining', remaining > 0 ? remaining : 0);
+          await prefs.setBool('sunbathing_is_running', false);
+          await prefs.remove('sunbathing_start_time');
+        }
+      } else if (payload == 'study') {
+        final startTimeMs = prefs.getInt('study_start_time') ?? 0;
+        final savedSeconds = prefs.getInt('study_seconds_remaining') ?? 25 * 60;
+        if (startTimeMs > 0) {
+          final startTime = DateTime.fromMillisecondsSinceEpoch(startTimeMs);
+          final elapsed = DateTime.now().difference(startTime).inSeconds;
+          final remaining = savedSeconds - elapsed;
+          await prefs.setInt('study_seconds_remaining', remaining > 0 ? remaining : 0);
+          await prefs.setBool('study_is_running', false);
+          await prefs.remove('study_start_time');
+        }
+      } else if (payload == 'workout') {
+        final startTimeMs = prefs.getInt('workout_start_time') ?? 0;
+        final savedSeconds = prefs.getInt('workout_seconds_elapsed') ?? 0;
+        if (startTimeMs > 0) {
+          final startTime = DateTime.fromMillisecondsSinceEpoch(startTimeMs);
+          final elapsed = DateTime.now().difference(startTime).inSeconds;
+          final total = savedSeconds + elapsed;
+          await prefs.setInt('workout_seconds_elapsed', total);
+          await prefs.setBool('workout_is_running', false);
+          await prefs.remove('workout_start_time');
+        }
+      } else if (payload == 'pacer') {
+        await prefs.setBool('pacer_is_paused', true);
+      }
+    } else if (action == 'resume_task') {
+      if (payload == 'sunbathing') {
+        final pausedRemaining = prefs.getInt('sunbathing_paused_remaining') ?? 15 * 60;
+        await prefs.setInt('sunbathing_total_duration', pausedRemaining);
+        await prefs.setInt('sunbathing_start_time', DateTime.now().millisecondsSinceEpoch);
+        await prefs.setBool('sunbathing_is_running', true);
+        await prefs.remove('sunbathing_paused_remaining');
+      } else if (payload == 'study') {
+        await prefs.setInt('study_start_time', DateTime.now().millisecondsSinceEpoch);
+        await prefs.setBool('study_is_running', true);
+      } else if (payload == 'workout') {
+        await prefs.setInt('workout_start_time', DateTime.now().millisecondsSinceEpoch);
+        await prefs.setBool('workout_is_running', true);
+      } else if (payload == 'pacer') {
+        await prefs.setBool('pacer_is_paused', false);
+      }
+    } else if (action == 'stop_task') {
+      if (payload == 'sunbathing') {
+        await prefs.setBool('sunbathing_is_running', false);
+        await prefs.remove('sunbathing_start_time');
+        await prefs.remove('sunbathing_paused_remaining');
+      } else if (payload == 'study') {
+        await prefs.setBool('study_is_running', false);
+        await prefs.remove('study_start_time');
+        final plugin = FlutterLocalNotificationsPlugin();
+        await plugin.cancel(id: 9997);
+      } else if (payload == 'workout') {
+        await prefs.setBool('workout_is_running', false);
+        await prefs.remove('workout_start_time');
+        await prefs.remove('workout_seconds_elapsed');
+        final plugin = FlutterLocalNotificationsPlugin();
+        await plugin.cancel(id: 9996);
+      } else if (payload == 'pacer') {
+        await prefs.setBool('pacer_is_running', false);
+        final plugin = FlutterLocalNotificationsPlugin();
+        await plugin.cancel(id: 9995);
+      }
+    }
+  }
+}
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._();
@@ -185,7 +271,14 @@ class NotificationService {
       iOS: iosSettings,
     );
 
-    await _localNotificationsPlugin.initialize(settings: initSettings);
+    await _localNotificationsPlugin.initialize(
+      settings: initSettings,
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+      onDidReceiveNotificationResponse: (response) {
+        // Foreground tap handling (optional navigation)
+        notificationTapBackground(response);
+      },
+    );
 
     // Request permissions for Android 13+
     final androidImplementation = _localNotificationsPlugin.resolvePlatformSpecificImplementation<
@@ -425,27 +518,52 @@ class NotificationService {
     await _localNotificationsPlugin.cancel(id: 9999);
   }
 
-  // Ongoing / Persistent Notification
   Future<void> showOngoingNotification({
     required int id,
     required String title,
     required String body,
     required int durationSeconds,
+    required String taskType,
+    bool isPaused = false,
   }) async {
+    final actions = <AndroidNotificationAction>[];
+    
+    if (isPaused) {
+      actions.add(const AndroidNotificationAction(
+        'resume_task',
+        '▶️ Devam Et',
+        showsUserInterface: true,
+      ));
+    } else {
+      actions.add(const AndroidNotificationAction(
+        'pause_task',
+        '⏸️ Durdur',
+        showsUserInterface: true,
+      ));
+    }
+    
+    actions.add(const AndroidNotificationAction(
+      'stop_task',
+      '⏹️ Bitir',
+      showsUserInterface: true,
+      cancelNotification: true,
+    ));
+
     final androidDetails = AndroidNotificationDetails(
       'ongoing_tasks_channel',
       'Aktif İşlemler',
       channelDescription: 'Devam eden işlemlerin gösterildiği bildirimler',
       importance: Importance.low,
       priority: Priority.low,
-      ongoing: true,
+      ongoing: !isPaused,
       autoCancel: false,
       showWhen: true,
-      usesChronometer: true,
+      usesChronometer: !isPaused, // Sadece devam ederken sayaç akar
       chronometerCountDown: true,
-      when: DateTime.now().millisecondsSinceEpoch + (durationSeconds * 1000),
+      when: isPaused ? 0 : DateTime.now().millisecondsSinceEpoch + (durationSeconds * 1000),
       playSound: false,
       enableVibration: false,
+      actions: actions,
     );
 
     final iosDetails = const DarwinNotificationDetails(
@@ -463,6 +581,7 @@ class NotificationService {
       id: id,
       title: title,
       body: body,
+      payload: taskType,
       notificationDetails: details,
     );
   }

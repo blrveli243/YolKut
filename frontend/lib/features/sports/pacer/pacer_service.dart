@@ -7,6 +7,8 @@ import 'package:geolocator_android/geolocator_android.dart';
 import 'package:geolocator_apple/geolocator_apple.dart';
 import 'package:audioplayers/audioplayers.dart';
 import '../../../core/api_client.dart';
+import '../../../core/services/notification_service.dart';
+
 enum PaceStatus { perfect, tooSlow, tooFast, initializing }
 enum PacerAudioMode { breath, beep }
 
@@ -17,6 +19,7 @@ class PacerState {
   final int elapsedSeconds; // Geçen süre
   final PaceStatus status;
   final bool isRunning;
+  final bool isPaused;
   
   // Nefes Koçu Değişkenleri
   final bool isInhaling; // True ise Nefes Al, False ise Nefes Ver
@@ -31,6 +34,7 @@ class PacerState {
     required this.elapsedSeconds,
     required this.status,
     required this.isRunning,
+    required this.isPaused,
     required this.isInhaling,
     required this.breathingDurationMs,
     required this.audioMode,
@@ -44,6 +48,7 @@ class PacerState {
     int? elapsedSeconds,
     PaceStatus? status,
     bool? isRunning,
+    bool? isPaused,
     bool? isInhaling,
     int? breathingDurationMs,
     PacerAudioMode? audioMode,
@@ -56,6 +61,7 @@ class PacerState {
       elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
       status: status ?? this.status,
       isRunning: isRunning ?? this.isRunning,
+      isPaused: isPaused ?? this.isPaused,
       isInhaling: isInhaling ?? this.isInhaling,
       breathingDurationMs: breathingDurationMs ?? this.breathingDurationMs,
       audioMode: audioMode ?? this.audioMode,
@@ -71,6 +77,7 @@ class PacerState {
       elapsedSeconds: 0,
       status: PaceStatus.initializing,
       isRunning: false,
+      isPaused: false,
       isInhaling: true,
       breathingDurationMs: 1500, 
       audioMode: PacerAudioMode.breath, 
@@ -90,6 +97,8 @@ class PacerNotifier extends Notifier<PacerState> {
 
   // Haptic Feedback Cooldown
   DateTime? _lastWarningTime;
+
+  final NotificationService _notificationService = NotificationService();
 
   @override
   PacerState build() {
@@ -170,6 +179,7 @@ class PacerNotifier extends Notifier<PacerState> {
 
     state = state.copyWith(
       isRunning: true,
+      isPaused: false,
       currentSpeedKmH: 0.0,
       distanceKm: 0.0,
       elapsedSeconds: 0,
@@ -236,6 +246,47 @@ class PacerNotifier extends Notifier<PacerState> {
       state = state.copyWith(distanceKm: state.distanceKm + addedDistanceKm);
       _evaluatePace(currentSpeed);
     });
+
+    _updateNotification();
+  }
+
+  void pausePacer() {
+    if (!state.isRunning || state.isPaused) return;
+    _timer?.cancel();
+    _breathingTimer?.cancel();
+    _positionStream?.pause();
+    _audioPlayer.pause();
+    state = state.copyWith(isPaused: true);
+    _updateNotification();
+  }
+
+  void resumePacer() {
+    if (!state.isRunning || !state.isPaused) return;
+    state = state.copyWith(isPaused: false);
+    
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!state.isRunning || state.isPaused) return;
+      state = state.copyWith(elapsedSeconds: state.elapsedSeconds + 1);
+    });
+    
+    _startBreathingCycle();
+    _positionStream?.resume();
+    _updateNotification();
+  }
+
+  void _updateNotification() {
+    if (state.isRunning) {
+      _notificationService.showOngoingNotification(
+        id: 9995,
+        title: state.isPaused ? '⏸️ PaceMaster Duraklatıldı' : '🏃‍♂️ PaceMaster Aktif',
+        body: 'Mesafe: ${state.distanceKm.toStringAsFixed(2)} km - Süre: ${state.elapsedSeconds}s',
+        durationSeconds: state.elapsedSeconds,
+        taskType: 'pacer',
+        isPaused: state.isPaused,
+      );
+    } else {
+      _notificationService.cancelOngoingNotification(9995);
+    }
   }
 
   void _startBreathingCycle() {
@@ -343,8 +394,9 @@ class PacerNotifier extends Notifier<PacerState> {
     final targetSpeed = state.targetSpeedKmH;
     final avgSpeed = elapsed > 0 ? (distance / (elapsed / 3600)) : 0.0;
     
-    state = state.copyWith(isRunning: false);
+    state = state.copyWith(isRunning: false, isPaused: false);
     await _audioPlayer.stop();
+    _updateNotification();
 
     if (distance > 0.01 && elapsed > 10) {
       try {

@@ -1,18 +1,20 @@
-import '../../core/theme/app_colors.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/app_colors.dart';
+import 'study_timer_provider.dart';
 
-class StudyProgramScreen extends StatefulWidget {
+class StudyProgramScreen extends ConsumerStatefulWidget {
   const StudyProgramScreen({super.key});
 
   @override
-  State<StudyProgramScreen> createState() => _StudyProgramScreenState();
+  ConsumerState<StudyProgramScreen> createState() => _StudyProgramScreenState();
 }
 
-class _StudyProgramScreenState extends State<StudyProgramScreen>
+class _StudyProgramScreenState extends ConsumerState<StudyProgramScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
@@ -21,13 +23,6 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
   bool _goalQuestions = false;
   bool _goalReview = false;
   bool _goalReading = false;
-
-  // Pomodoro State
-  Timer? _timer;
-  int _secondsRemaining = 25 * 60;
-  bool _isRunning = false;
-  bool _isBreak = false;
-  int _completedPomodoros = 0;
 
   // Study Session Logs
   List<Map<String, dynamic>> _studyLogs = [];
@@ -46,7 +41,6 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
 
   @override
   void dispose() {
-    _timer?.cancel();
     _tabController.dispose();
     _subjectController.dispose();
     _durationController.dispose();
@@ -72,8 +66,6 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
         _goalReading = prefs.getBool('study_goal_reading') ?? false;
       }
 
-      _completedPomodoros = prefs.getInt('study_completed_pomodoros') ?? 0;
-
       final logsRaw = prefs.getString('study_logs') ?? '[]';
       _studyLogs = List<Map<String, dynamic>>.from(json.decode(logsRaw));
     });
@@ -94,90 +86,6 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
     await prefs.setString('study_logs', json.encode(_studyLogs));
   }
 
-  Future<void> _savePomodoroCount() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('study_completed_pomodoros', _completedPomodoros);
-  }
-
-  // --- Pomodoro Logic ---
-  void _toggleTimer() {
-    if (_isRunning) {
-      _timer?.cancel();
-      setState(() {
-        _isRunning = false;
-      });
-    } else {
-      setState(() {
-        _isRunning = true;
-      });
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (_secondsRemaining > 0) {
-          setState(() {
-            _secondsRemaining--;
-          });
-        } else {
-          _timer?.cancel();
-          _handleTimerCompletion();
-        }
-      });
-    }
-  }
-
-  void _resetTimer() {
-    _timer?.cancel();
-    setState(() {
-      _isRunning = false;
-      _secondsRemaining = _isBreak ? 5 * 60 : 25 * 60;
-    });
-  }
-
-  void _handleTimerCompletion() {
-    setState(() {
-      _isRunning = false;
-      if (!_isBreak) {
-        // Pomodoro Work Completed
-        _completedPomodoros++;
-        _savePomodoroCount();
-        _isBreak = true;
-        _secondsRemaining = 5 * 60; // 5 min break
-        // Add to study logs automatically
-        _studyLogs.insert(0, {
-          'date': DateFormat('dd.MM.yyyy HH:mm').format(DateTime.now()),
-          'subject': 'Pomodoro Oturumu',
-          'duration': 25,
-          'questions': 0,
-        });
-        _saveLogs();
-      } else {
-        // Break Completed
-        _isBreak = false;
-        _secondsRemaining = 25 * 60; // 25 min work
-      }
-    });
-
-    // Play sound / Show dialog
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(_isBreak ? 'Tebrikler!' : 'Mola Bitti!'),
-        content: Text(
-          _isBreak
-              ? 'Bir Pomodoro seansını tamamladınız. Şimdi 5 dakikalık mola zamanı!'
-              : 'Molanız bitti. Yeni odaklanma seansına başlamaya hazır mısınız?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'Tamam',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   String _formatTime(int totalSeconds) {
     final minutes = (totalSeconds / 60).floor().toString().padLeft(2, '0');
     final seconds = (totalSeconds % 60).toString().padLeft(2, '0');
@@ -186,7 +94,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final studyState = ref.watch(studyTimerProvider);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -239,7 +147,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
                   _buildHeaderStat(
                     icon: Icons.hourglass_empty,
                     label: 'Pomodoro',
-                    value: '$_completedPomodoros adet',
+                    value: '${studyState.completedPomodoros} adet',
                   ),
                 ],
               ),
@@ -272,7 +180,7 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
               controller: _tabController,
               children: [
                 _buildGoalsTab(),
-                _buildPomodoroTab(),
+                _buildPomodoroTab(studyState),
                 _buildLogsTab(),
               ],
             ),
@@ -432,97 +340,97 @@ class _StudyProgramScreenState extends State<StudyProgramScreen>
   }
 
   // --- POMODORO TAB ---
-  Widget _buildPomodoroTab() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Timer Face Circle
-            Container(
-              width: 240,
-              height: 240,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).cardColor,
-                border: Border.all(
-                  color: _isBreak ? AppColors.primary : AppColors.info,
-                  width: 8,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: (_isBreak ? AppColors.primary : AppColors.info)
-                        .withValues(alpha: 0.15),
-                    blurRadius: 20,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    _isBreak ? 'Mola' : 'Odaklanma',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: _isBreak ? AppColors.primary : AppColors.info,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    _formatTime(_secondsRemaining),
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ],
-              ),
+  Widget _buildPomodoroTab(StudyTimerState studyState) {
+    final progress = studyState.isBreak
+        ? (studyState.secondsRemaining / (5 * 60))
+        : (studyState.secondsRemaining / (25 * 60));
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            studyState.isBreak ? 'Mola Zamanı ☕' : 'Odaklanma Zamanı 🧠',
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 48),
-            // Actions
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _toggleTimer,
-                  icon: Icon(
-                    _isRunning ? Icons.pause : Icons.play_arrow,
+          ),
+          const SizedBox(height: 40),
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 250,
+                height: 250,
+                child: CircularProgressIndicator(
+                  value: progress,
+                  strokeWidth: 16,
+                  backgroundColor: Theme.of(context).dividerColor.withValues(alpha: 0.3),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    studyState.isBreak ? AppColors.warning : AppColors.info,
+                  ),
+                  strokeCap: StrokeCap.round,
+                ),
+              ),
+              Text(
+                _formatTime(studyState.secondsRemaining),
+                style: TextStyle(
+                  fontSize: 56,
+                  fontWeight: FontWeight.w900,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  letterSpacing: 2,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 60),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  ref.read(studyTimerProvider.notifier).resetTimer();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.refresh, size: 32),
+                ),
+              ),
+              const SizedBox(width: 32),
+              GestureDetector(
+                onTap: () {
+                  ref.read(studyTimerProvider.notifier).toggleTimer();
+                },
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: studyState.isBreak ? AppColors.warning : AppColors.info,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: (studyState.isBreak ? AppColors.warning : AppColors.info).withValues(alpha: 0.4),
+                        blurRadius: 16,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    studyState.isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
                     color: Colors.white,
-                  ),
-                  label: Text(
-                    _isRunning ? 'Duraklat' : 'Başlat',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _isBreak
-                        ? AppColors.primary
-                        : AppColors.info,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                    size: 48,
                   ),
                 ),
-                const SizedBox(width: 16),
-                IconButton(
-                  onPressed: _resetTimer,
-                  icon: const Icon(Icons.refresh),
-                  iconSize: 32,
-                  color: Colors.grey,
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

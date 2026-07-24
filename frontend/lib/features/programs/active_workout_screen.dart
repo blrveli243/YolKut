@@ -6,7 +6,7 @@ import '../../core/data/exercises_db.dart';
 import '../tasks/tasks_provider.dart';
 import 'programs_provider.dart';
 import 'workout_logs_provider.dart';
-import '../health/health_repository.dart';
+import 'workout_timer_provider.dart';
 
 class ActiveWorkoutScreen extends ConsumerStatefulWidget {
   final DateTime date;
@@ -22,13 +22,6 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
     with SingleTickerProviderStateMixin {
   // Map representation: { "scheduledExerciseId": [ { "set": 1, "reps": 10, "kg": 50.0 }, ... ] }
   final Map<String, List<Map<String, dynamic>>> _workoutData = {};
-
-  bool _isStarted = false;
-  int _secondsElapsed = 0;
-  Timer? _timer;
-
-  int _currentBpm = 0; // 0 means fetching or unavailable
-  String _motivationMessage = "Hazırlan, harika bir antrenman seni bekliyor!";
 
   late AnimationController _heartbeatController;
   late Animation<double> _heartbeatAnimation;
@@ -63,60 +56,13 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
 
   @override
   void dispose() {
-    _timer?.cancel();
     _heartbeatController.dispose();
     super.dispose();
   }
 
-  void _startWorkout() async {
-    setState(() {
-      _isStarted = true;
-      _currentBpm = 0;
-      _motivationMessage = "Saatinizden nabız verisi bekleniyor...";
-    });
-
+  void _startWorkout() {
+    ref.read(workoutTimerProvider.notifier).start();
     _heartbeatController.repeat(reverse: true);
-
-    // Request permission once at the start
-    final repo = HealthRepository();
-    await repo.requestPermissions();
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      setState(() {
-        _secondsElapsed++;
-      });
-
-      // Fetch real heart rate every 5 seconds
-      if (_secondsElapsed % 5 == 0 || _secondsElapsed == 1) {
-        final hr = await repo.fetchLatestHeartRate();
-
-        if (hr != null && mounted) {
-          setState(() {
-            _currentBpm = hr;
-
-            if (_currentBpm > 135) {
-              _motivationMessage =
-                  "Yağ yakım bölgesindesin! Süper gidiyorsun. 🔥";
-            } else if (_currentBpm > 100) {
-              _motivationMessage = "Nabzın harika. Odaklan ve kaldır! 💪";
-            } else if (_currentBpm > 0) {
-              _motivationMessage = "Haydi tempoyu biraz artıralım. 🚀";
-            }
-
-            // Adjust heartbeat speed based on BPM
-            int durationMs = (60000 / (_currentBpm > 0 ? _currentBpm : 60))
-                .round();
-            if (durationMs > 1000) durationMs = 1000;
-            if (durationMs < 300) durationMs = 300;
-
-            _heartbeatController.duration = Duration(milliseconds: durationMs);
-            if (_heartbeatController.isAnimating) {
-              _heartbeatController.repeat(reverse: true);
-            }
-          });
-        }
-      }
-    });
   }
 
   String _formatTime(int seconds) {
@@ -125,8 +71,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
     return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
   }
 
-  void _finishWorkout() {
-    _timer?.cancel();
+  void _finishWorkout(int totalSeconds) {
+    ref.read(workoutTimerProvider.notifier).stop();
     _heartbeatController.stop();
 
     final scheduledWorkouts = (ref.read(programsProvider).scheduled.value ?? [])
@@ -166,7 +112,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'Tebrikler! $_formatTime dakika boyunca antrenman yaptınız. 💪',
+          'Tebrikler! ${_formatTime(totalSeconds)} dakika boyunca antrenman yaptınız. 💪',
         ),
         backgroundColor: AppColors.primary,
       ),
@@ -180,6 +126,21 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
             .where((e) => e.weekday == widget.date.weekday)
             .toList();
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final workoutState = ref.watch(workoutTimerProvider);
+
+    // Adjust heartbeat speed based on BPM if running
+    if (workoutState.isRunning && workoutState.currentBpm > 0) {
+      int durationMs = (60000 / workoutState.currentBpm).round();
+      if (durationMs > 1000) durationMs = 1000;
+      if (durationMs < 300) durationMs = 300;
+
+      if (_heartbeatController.duration != Duration(milliseconds: durationMs)) {
+        _heartbeatController.duration = Duration(milliseconds: durationMs);
+        if (_heartbeatController.isAnimating) {
+          _heartbeatController.repeat(reverse: true);
+        }
+      }
+    }
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -210,30 +171,63 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
                   ),
                 ),
               )
-            : !_isStarted
+            : !workoutState.isRunning && workoutState.secondsElapsed == 0
             ? _buildStartScreen(context)
-            : _buildActiveWorkoutScreen(context, scheduledWorkouts),
-        bottomNavigationBar: (scheduledWorkouts.isEmpty || !_isStarted)
+            : _buildActiveWorkoutScreen(context, scheduledWorkouts, workoutState),
+        bottomNavigationBar: (scheduledWorkouts.isEmpty || (!workoutState.isRunning && workoutState.secondsElapsed == 0))
             ? null
             : Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  onPressed: _finishWorkout,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                child: Row(
+                  children: [
+                    if (workoutState.isRunning)
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => ref.read(workoutTimerProvider.notifier).pause(),
+                          icon: const Icon(Icons.pause, color: Colors.white),
+                          label: const Text('Duraklat', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.warning,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                        ),
+                      )
+                    else
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => ref.read(workoutTimerProvider.notifier).start(),
+                          icon: const Icon(Icons.play_arrow, color: Colors.white),
+                          label: const Text('Devam Et', style: TextStyle(color: Colors.white)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.info,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => _finishWorkout(workoutState.secondsElapsed),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text(
+                          'Antrenmanı Bitir',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  child: const Text(
-                    'Antrenmanı Bitir',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  ],
                 ),
               ),
       ),
@@ -311,6 +305,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
   Widget _buildActiveWorkoutScreen(
     BuildContext context,
     List<ScheduledExercise> scheduledWorkouts,
+    WorkoutTimerState workoutState,
   ) {
     return Column(
       children: [
@@ -351,7 +346,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        _formatTime(_secondsElapsed),
+                        _formatTime(workoutState.secondsElapsed),
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 32,
@@ -393,7 +388,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            _currentBpm > 0 ? '$_currentBpm' : '--',
+                            workoutState.currentBpm > 0 ? '${workoutState.currentBpm}' : '--',
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.onSurface,
                               fontSize: 32,
@@ -418,7 +413,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  _motivationMessage,
+                  workoutState.motivationMessage,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: AppColors.info,

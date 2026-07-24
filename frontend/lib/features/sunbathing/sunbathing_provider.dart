@@ -203,6 +203,8 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
       title: '☀️ Güneşlenme Modu Aktif',
       body: state.isFrontSide ? 'Ön Yüz (Göğüs/Karın)' : 'Arka Yüz (Sırt/Bacak)',
       durationSeconds: state.remainingSeconds,
+      taskType: 'sunbathing',
+      isPaused: false,
     );
 
     _startLiveActivity();
@@ -244,10 +246,19 @@ class SunbathingNotifier extends Notifier<SunbathingState> {
     if (!state.isRunning) return;
     _timer?.cancel();
     _notificationService.cancelSunbathingAlarm();
-    _notificationService.cancelOngoingNotification(9998);
     state = state.copyWith(isRunning: false);
     _persistPausedState();
     
+    // Update notification to show paused state with resume button
+    _notificationService.showOngoingNotification(
+      id: 9998,
+      title: '⏸️ Güneşlenme Duraklatıldı',
+      body: state.isFrontSide ? 'Ön Yüz (Göğüs/Karın)' : 'Arka Yüz (Sırt/Bacak)',
+      durationSeconds: state.remainingSeconds,
+      taskType: 'sunbathing',
+      isPaused: true,
+    );
+
     try {
       _liveActivityChannel.invokeMethod('stop');
     } catch (_) {}

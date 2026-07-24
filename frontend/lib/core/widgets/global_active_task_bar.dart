@@ -4,6 +4,10 @@ import '../../features/sunbathing/sunbathing_provider.dart';
 import '../../features/sunbathing/sunbathing_screen.dart';
 import '../../features/sports/pacer/pacer_service.dart';
 import '../../features/sports/pacer/active_pace_screen.dart';
+import '../../features/programs/study_timer_provider.dart';
+import '../../features/programs/study_program_screen.dart';
+import '../../features/programs/workout_timer_provider.dart';
+import '../../features/programs/active_workout_screen.dart';
 import '../theme/app_colors.dart';
 
 class GlobalActiveTaskBar extends ConsumerWidget {
@@ -153,6 +157,163 @@ class GlobalActiveTaskBar extends ConsumerWidget {
                 icon: const Icon(Icons.stop_rounded, color: Colors.white),
                 onPressed: () {
                   pacerNotifier.stopPacer();
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final studyState = ref.watch(studyTimerProvider);
+    final studyNotifier = ref.read(studyTimerProvider.notifier);
+
+    // If study is running or paused, show the bar
+    if (studyState.isRunning || studyState.secondsRemaining < (studyState.isBreak ? 300 : 1500)) {
+      final int minutes = studyState.secondsRemaining ~/ 60;
+      final int seconds = studyState.secondsRemaining % 60;
+      final timeString = '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+      final modeText = studyState.isBreak ? 'Mola' : 'Odaklanma';
+
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const StudyProgramScreen()),
+          );
+        },
+        child: Container(
+          height: 56,
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: studyState.isBreak ? AppColors.warning.withValues(alpha: 0.9) : AppColors.info.withValues(alpha: 0.9),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(studyState.isBreak ? Icons.coffee : Icons.book, color: Colors.white, size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Pomodoro ($modeText)',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      '$timeString kaldı',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(studyState.isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded, color: Colors.white),
+                onPressed: () {
+                  studyNotifier.toggleTimer();
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.stop_rounded, color: Colors.white),
+                onPressed: () {
+                  studyNotifier.stop();
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final workoutState = ref.watch(workoutTimerProvider);
+    final workoutNotifier = ref.read(workoutTimerProvider.notifier);
+
+    // If workout is running or paused
+    if (workoutState.isRunning || workoutState.secondsElapsed > 0) {
+      final int minutes = workoutState.secondsElapsed ~/ 60;
+      final int seconds = workoutState.secondsElapsed % 60;
+      final timeString = '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+
+      return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ActiveWorkoutScreen(date: DateTime.now())),
+          );
+        },
+        child: Container(
+          height: 56,
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: AppColors.error.withValues(alpha: 0.9),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.fitness_center, color: Colors.white, size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Aktif Antrenman',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      'Süre: $timeString • Nabız: ${workoutState.currentBpm > 0 ? workoutState.currentBpm : '--'}',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(workoutState.isRunning ? Icons.pause_rounded : Icons.play_arrow_rounded, color: Colors.white),
+                onPressed: () {
+                  if (workoutState.isRunning) {
+                    workoutNotifier.pause();
+                  } else {
+                    workoutNotifier.start();
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.stop_rounded, color: Colors.white),
+                onPressed: () {
+                  workoutNotifier.stop();
                 },
               ),
             ],
